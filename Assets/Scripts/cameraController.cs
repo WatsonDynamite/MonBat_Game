@@ -12,23 +12,31 @@ public class cameraController : MonoBehaviour
     public GameObject orbitMon1;
     public GameObject orbitMon2;
 
-    private List<GameObject> cameras;
+    private List<KeyValuePair<GameObject, float>> cameras;
     // Start is called before the first frame update
     void Start()
     {
-       cameras = new List<GameObject>{overShoulder, orbit, faceZoom1Camera,  splitScCamera, faceZoom2Camera, orbitMon1, orbitMon2};
-       StartCoroutine(CameraSwap());
+       cameras = new List<KeyValuePair<GameObject, float>>{ new KeyValuePair<GameObject, float>(overShoulder, 10), 
+                                                            new KeyValuePair<GameObject, float>(orbit, 7), 
+                                                            new KeyValuePair<GameObject, float>(faceZoom1Camera, 8),
+                                                            new KeyValuePair<GameObject, float>(splitScCamera, 5),
+                                                            new KeyValuePair<GameObject, float>(faceZoom2Camera, 8),
+                                                            new KeyValuePair<GameObject, float>(orbitMon1, 7),
+                                                            new KeyValuePair<GameObject, float>(orbitMon2, 7)};
+       //new List<GameObject>{overShoulder, orbit, faceZoom1Camera,  splitScCamera, faceZoom2Camera, orbitMon1, orbitMon2};
+
+       StartCoroutine(CameraStart());
     }
 
     void Update(){
         
     }
 
-         public static List<GameObject> Fisher_Yates_CardDeck_Shuffle (List<GameObject>aList) {
+         public static List<KeyValuePair<GameObject, float>> Fisher_Yates_CardDeck_Shuffle (List<KeyValuePair<GameObject, float>>aList) {
  
          System.Random _random = new System.Random ();
  
-         GameObject myGO;
+         KeyValuePair<GameObject, float> myGO;
  
          int n = aList.Count;
          for (int i = 0; i < n; i++)
@@ -44,14 +52,21 @@ public class cameraController : MonoBehaviour
          return aList;
      }
 
+    IEnumerator CameraStart(){
+        overShoulder.SetActive(true);
+        yield return new WaitForSeconds(15.0f);
+        StartCoroutine(CameraSwap());
+        overShoulder.SetActive(false);
+        yield return null;
+    }
 
     IEnumerator CameraSwap(){
-        List<GameObject> cameraShuffled = Fisher_Yates_CardDeck_Shuffle(cameras);
-        foreach(GameObject cam in cameraShuffled){
+        List<KeyValuePair<GameObject, float>> cameraShuffled = Fisher_Yates_CardDeck_Shuffle(cameras);
+        foreach(KeyValuePair<GameObject, float> cam in cameraShuffled){
             Debug.Log(cam);
-            cam.SetActive(true);
-            yield return new WaitForSeconds(6.0f);
-            cam.SetActive(false);
+            cam.Key.SetActive(true);
+            yield return new WaitForSeconds(cam.Value);
+            cam.Key.SetActive(false);
         }
         StartCoroutine(CameraSwap());
         yield return null;
