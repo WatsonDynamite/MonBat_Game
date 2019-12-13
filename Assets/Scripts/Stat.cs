@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Stat {
     public int value;       //base value
-    public int modValue;    //value with modifiers (same as base value if 0, except for HP)
     public int stage;       //buff stage
     public float statMod;   //value of modifier to apply
 
     public Stat(int val){
         value = val;
+        statMod = 1;
         stage = 0;
     }
 

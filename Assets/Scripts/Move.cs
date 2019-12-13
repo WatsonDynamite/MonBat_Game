@@ -4,23 +4,27 @@ using UnityEngine;
 
 public class Move
 {
-    private string name {get;}
-    private int power {get;}
-    private int cost {get;}
-    private Type type {get;}
-    //private Category cat   //for when we implement status moves
+    public string name {get;}
+    public int power {get;}
+    public int cost {get;}
+    public Type type {get;}
+    public Category cat {get;}  //for when we implement status moves
 
-    public Move(string name, int pow, int c, Type t){
+    public Move(string nm, int pow, int c, Type t, Category ct){
+            name = nm;
             power = pow;
             cost = c;
             type = t;
+            cat = ct;
     }
 }
 
 
-
 public enum Category
 {
-    OFFENSIVE,
+    PHYSICAL,
+    SPECIAL,
     STATUS
 }
+
+

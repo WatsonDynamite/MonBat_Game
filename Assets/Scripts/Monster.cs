@@ -9,12 +9,15 @@ public class Monster
     public Type type1 {get;}
     public Type type2 {get;}
 
+    public int maxHP {get; set;}
+    public int currentHP{get; set;}
+
     public Stat HP {get;}
     public Stat ATK {get;}
     public Stat DEF {get;}
     public Stat spATK {get;}
     public Stat spDEF {get;}
-    public Stat SPD {get;}
+    public Stat SPEED {get;}
 
     public Move move1 {get;}
     public Move move2 {get;}
@@ -27,17 +30,35 @@ public class Monster
         name = n;
         type1 = t1;
         type2 = t2;
-        HP = new Stat((int) Mathf.Round(hp * 1.5f));
+        HP = new Stat(hp);
+        currentHP = (int) Mathf.Round(hp * 1.5f);
+        maxHP = currentHP;
         ATK = new Stat(atk);
         DEF = new Stat(def);
         spATK = new Stat (spatk);
         spDEF = new Stat (spdef);
-        SPD = new Stat(spd);
+        SPEED = new Stat(spd);
         move1 = m1;
         move2 = m2;
         move3 = m3;
         move4 = m4;
         model = mod;
+    }
+
+    public void receiveDamage(int dmg){
+        currentHP = currentHP - dmg;
+        if(currentHP < 0){
+            currentHP = 0;
+        }
+    }
+
+    public List<Move> getMoves(){
+        List<Move> moves = new List<Move>();
+        moves.Add(move1);
+        moves.Add(move2);
+        moves.Add(move3);
+        moves.Add(move4);
+        return moves;
     }
 }
 

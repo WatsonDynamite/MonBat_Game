@@ -13,8 +13,8 @@ public class cameraController : MonoBehaviour
     public GameObject orbitMon2;
 
     private List<KeyValuePair<GameObject, float>> cameras;
-    // Start is called before the first frame update
-    void Start()
+    
+    void OnEnable()
     {
        cameras = new List<KeyValuePair<GameObject, float>>{ new KeyValuePair<GameObject, float>(overShoulder, 10), 
                                                             new KeyValuePair<GameObject, float>(orbit, 7), 
@@ -55,8 +55,9 @@ public class cameraController : MonoBehaviour
     IEnumerator CameraStart(){
         overShoulder.SetActive(true);
         yield return new WaitForSeconds(15.0f);
-        StartCoroutine(CameraSwap());
         overShoulder.SetActive(false);
+        StartCoroutine(CameraSwap());
+        
         yield return null;
     }
 
