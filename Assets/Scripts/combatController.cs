@@ -35,7 +35,17 @@ public class combatController : MonoBehaviour
     public GameObject cameraController;
 
 
+    public enum Actions{
+        ATTACK,
+        SWITCH,
+        
+        FAINT
+    }
 
+    delegate IEnumerator AtkAnim(Move move);
+    delegate IEnumerator FaintAnim();
+    delegate IEnumerator BuffAnim(Move move);
+    delegate IEnumerator DebuffAnim(Move move);
   
 
 
@@ -63,92 +73,155 @@ public class combatController : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        
+    { 
     }
 
-    public void ExecuteTurn(Move playerMove, Move enemyMove){
 
-
-        Debug.Log("Executing turn");
-        //damage formula:
-                // [(MovePower * 2) * STAB] * (Atk / Def) * 0.3 * modifiers
-
-
-        // determine which moves to execute (params)
-        // determine turn order
-        List<Monster> attackQ = new List<Monster>();
+    public void ExecuteTurn(Move player1Move, Move player2Move){
+         List<IEnumerator> seq = new List<IEnumerator>();
+         // determine turn order
         var speedDiff = player1Monster.SPEED.value * player1Monster.SPEED.statMod - player2Monster.SPEED.value * player1Monster.SPEED.statMod;
         //if positive, player 1 is first. If negative, player 2 is first. If 0, speed tie.
 
         if(speedDiff > 0){
-            attackQ.Add(player1Monster);
-            attackQ.Add(player2Monster);
+           StartCoroutine(DoMoves(player1Move, player2Move, player1Monster, player2Monster));
         }else if(speedDiff < 0){
-            attackQ.Add(player2Monster);
-            attackQ.Add(player1Monster);
+           StartCoroutine(DoMoves(player2Move, player1Move, player2Monster, player1Monster));
+        }
+    
+    }
+
+
+    public IEnumerator DoMoves(Move firstMove, Move secondMove, Monster first, Monster second){
+        var isSTAB = false;
+        var dmg = 0;
+        AtkAnim AtkAnimDel1st;
+        FaintAnim FaintAnimDel1st;
+        BuffAnim BuffAnimDel1st;
+
+        AtkAnim AtkAnimDel2nd;
+        FaintAnim FaintAnimDel2nd;
+        BuffAnim BuffAnimDel2nd;
+
+        if(first == player1Monster){
+            AtkAnimDel1st = new AtkAnim(PlayAtkAnimP1);
+            FaintAnimDel1st = new FaintAnim(PlayFaintAnimP1);
+            BuffAnimDel1st = new BuffAnim(PlayBuffAnimP1);
+            
+
+            AtkAnimDel2nd = new AtkAnim(PlayAtkAnimP2);
+            FaintAnimDel2nd = new FaintAnim(PlayFaintAnimP2);
+            BuffAnimDel2nd = new BuffAnim(PlayBuffAnimP2);
+            
+
+        }else{
+            
+            AtkAnimDel1st = new AtkAnim(PlayAtkAnimP2);
+            FaintAnimDel1st = new FaintAnim(PlayFaintAnimP2);
+            
+
+            AtkAnimDel2nd = new AtkAnim(PlayAtkAnimP1);
+            FaintAnimDel2nd = new FaintAnim(PlayFaintAnimP1);
+            BuffAnimDel2nd = new BuffAnim(PlayBuffAnimP1);
         }
 
-        
-        // for each attacker:
-        double dmgP1atk = 0;
-        double dmgP2atk = 0;
-        
-                foreach (Monster m in attackQ){
-                         // determine move damage
-                         bool isSTAB;
 
-                         if(m == player1Monster){
-                             if(player1Monster.type1 == playerMove.type || player1Monster.type2 == playerMove.type){
-                                 //is stab
-                                 isSTAB = true;
-                             }else{ isSTAB = false; }
-                             switch(playerMove.cat){
-                                 case Category.PHYSICAL: dmgP1atk = ((playerMove.power * 2) * (isSTAB ? 1.5 : 1)) * (player1Monster.ATK.value / player2Monster.DEF.value) * 0.3 * (TypeUtils.Effectiveness(playerMove.type, player2Monster.type1) * TypeUtils.Effectiveness(playerMove.type, player2Monster.type2)); break;
-                                 case Category.SPECIAL:  dmgP1atk = ((playerMove.power * 2) * (isSTAB ? 1.5 : 1)) * (player1Monster.spATK.value / player2Monster.spDEF.value) * 0.3 * (TypeUtils.Effectiveness(playerMove.type, player2Monster.type1) * TypeUtils.Effectiveness(playerMove.type, player2Monster.type2)); break;
+            if(first.type1 == firstMove.type || first.type2 == firstMove.type){
+                //is stab
+                isSTAB = true;
+            }else{
+                isSTAB = false;
+            }
+
+            //FIRST ATTACKS SECOND
+            switch(firstMove.cat){
+             case Category.PHYSICAL: var dmg1 = (int) Mathf.Floor((float) ((firstMove.power) * (isSTAB ? 1.5f : 1f)) * (first.ATK.value / second.DEF.value) * 0.3f * (TypeUtils.Effectiveness(firstMove.type, second.type1) * TypeUtils.Effectiveness(firstMove.type, second.type2)));
+                                     Debug.Log("First attacks second: " + dmg1);
+                                     second.receiveDamage(dmg1);
+                                     yield return AtkAnimDel1st(firstMove);
+                                     break;
+
+             case Category.SPECIAL:  var dmg2 = (int) Mathf.Floor((float) ((firstMove.power) * (isSTAB ? 1.5f : 1f)) * (first.spATK.value / second.spDEF.value) * 0.3f * (TypeUtils.Effectiveness(firstMove.type, second.type1) * TypeUtils.Effectiveness(firstMove.type, second.type2)));
+                                     Debug.Log("First attacks second: " + dmg2);
+                                     second.receiveDamage(dmg2);
+                                     yield return AtkAnimDel1st(firstMove);
+                                     break;
+
+                          
                              
-                            }
+            }
+
+            if(second.currentHP <= 0){
+                                            yield return FaintAnimDel2nd();
+                                             //turn is over
+                                     }
+
+
+
+            if(second.type1 == secondMove.type || second.type2 == secondMove.type){
+                //is stab
+                isSTAB = true;
+            }else{
+                isSTAB = false;
+            }
+            //SECOND ATTACKS FIRST
+            switch(secondMove.cat){
+             case Category.PHYSICAL: var dmg3 = (int) Mathf.Floor(((secondMove.power) * (isSTAB ? 1.5f : 1f)) * (second.ATK.value / first.DEF.value) * 0.3f * (TypeUtils.Effectiveness(secondMove.type, first.type1) * TypeUtils.Effectiveness(secondMove.type, first.type2)));
+                                     first.receiveDamage(dmg3);
+                                     Debug.Log("Second attacks first: " + dmg3);
+                                     yield return AtkAnimDel2nd(secondMove);
+                                     break;
+
+             case Category.SPECIAL:  first.receiveDamage((int) Mathf.Floor(((secondMove.power) * (isSTAB ? 1.5f : 1f)) * (second.spATK.value / first.spDEF.value) * 0.3f * (TypeUtils.Effectiveness(secondMove.type, first.type1) * TypeUtils.Effectiveness(secondMove.type, first.type2))));
+                                     yield return AtkAnimDel2nd(secondMove);
+                                     break;
+
+             case Category.STATUS:  var affectsOthers = false;
+                                    foreach (SecondaryEffect se in secondMove.secondaryEffects){
+                                                     if(se.type == SecondaryEffectType.OTHER){
+                                                         affectsOthers = true;
+                                                     }                              
+                                    }
+
+                                    if(affectsOthers){
+                                        
+                                    }else{
+                                        yield return BuffAnimDel2nd(secondMove);
+                                        foreach (SecondaryEffect se in secondMove.secondaryEffects){
+                                                                                    ApplyEffect(se.effect, second);
+                                                                                }
+                                    }
+                                    
+                                    break;  
+
+            }      
                              
+            
 
-                         }else if(m == player2Monster){
-                            if(player2Monster.type2 == enemyMove.type || player2Monster.type2 == enemyMove.type){
-                                 //is stab
-                                 isSTAB = true;
-                             }else{ isSTAB = false; }
-
-                             switch(enemyMove.cat){
-                                 case Category.PHYSICAL: dmgP2atk =  ((enemyMove.power * 2) * (isSTAB ? 1.5 : 1)) * (player2Monster.ATK.value / player1Monster.DEF.value) * 0.3 * (TypeUtils.Effectiveness(enemyMove.type, player1Monster.type1) * TypeUtils.Effectiveness(enemyMove.type, player1Monster.type2)); break;
-                                 case Category.SPECIAL:  dmgP2atk =  ((enemyMove.power * 2) * (isSTAB ? 1.5 : 1)) * (player2Monster.spATK.value / player1Monster.spDEF.value) * 0.3 * (TypeUtils.Effectiveness(enemyMove.type, player1Monster.type1) * TypeUtils.Effectiveness(enemyMove.type, player1Monster.type2)); break;
-                             
-                            }
-
-                         }
-                }
-               
-        
-                // execute move:
-                    // play animation
-                    // apply damage;
-      player1Monster.receiveDamage((int) Mathf.Floor((float) dmgP2atk));
-      player2Monster.receiveDamage((int) Mathf.Floor((float) dmgP1atk));
+            if(first.currentHP <= 0){
+                                            yield return FaintAnimDel1st();
+                                            yield break; //turn is over
+                                     }
 
 
-      P1HPText.GetComponent<Text>().text = player1Monster.currentHP.ToString() + " / " + player1Monster.maxHP.ToString();
-      Debug.Log((float) player1Monster.currentHP / (float) player1Monster.maxHP);
-      P2HPText.GetComponent<Text>().text = player2Monster.currentHP.ToString() + " / " + player2Monster.maxHP.ToString();
+
+    }
 
 
-      //construct animation sequence based on events
-      IEnumerator[] seq = new IEnumerator[]{};
-      if(speedDiff > 0){
-          seq = new IEnumerator[]{PlayAtkAnimP1(playerMove), HPBarDepleteAnim(P2HPMeter, (float) player2Monster.currentHP / (float) player2Monster.maxHP), PlayAtkAnimP2(enemyMove),  HPBarDepleteAnim(P2HPMeter, (float) player1Monster.currentHP / (float) player1Monster.maxHP), CameraStateRestore()};
-      }else if(speedDiff < 0) {
-          seq = new IEnumerator[]{PlayAtkAnimP2(enemyMove),  HPBarDepleteAnim(P1HPMeter, (float) player1Monster.currentHP / (float) player1Monster.maxHP), PlayAtkAnimP1(playerMove), HPBarDepleteAnim(P2HPMeter, (float) player2Monster.currentHP / (float) player2Monster.maxHP), CameraStateRestore()};
-      }
-
-      StartCoroutine(ExecuteTurnAnimations(seq));
-        
-
+    public void ApplyEffect(SecondaryEffectEffect effect, Monster monster){
+        switch (effect){
+                case SecondaryEffectEffect.HEALING:
+                Debug.Log("HEAL: " + (int)(monster.maxHP / 2f));
+                        monster.healDamage((int)(monster.maxHP / 2f));
+                        if(monster == player1Monster){
+                            StartCoroutine(HPBarFillAnim(P1HPMeter, (float) player1Monster.currentHP / (float) player1Monster.maxHP));
+                            P1HPText.GetComponent<Text>().text = player1Monster.currentHP.ToString() + " / " + player1Monster.maxHP.ToString();
+                        }else{
+                            StartCoroutine(HPBarFillAnim(P2HPMeter, (float) player2Monster.currentHP / (float) player2Monster.maxHP));
+                            P2HPText.GetComponent<Text>().text = player2Monster.currentHP.ToString() + " / " + player2Monster.maxHP.ToString();
+                        }
+                        break;
+        }
     }
 
 
@@ -158,14 +231,71 @@ public class combatController : MonoBehaviour
        MoveNamePlate.GetComponentInChildren<Text>().text = move.name;
        MoveNamePlate.SetActive(true);
        if((player1MonsterInstance).GetComponent<Animator>() != null){
-            (player1MonsterInstance).GetComponent<Animator>().SetBool("attacking", true);
+            (player1MonsterInstance).GetComponent<Animator>().SetBool("Attack 01", true);
             StartCoroutine(AnimationStateRestore(player1MonsterInstance));
        }
        yield return new WaitForSeconds(2);
        P2Cam.SetActive(true);
        P1Cam.SetActive(false);
+       if((player2MonsterInstance).GetComponent<Animator>() != null){
+            (player2MonsterInstance).GetComponent<Animator>().SetBool("Take Damage", true);
+            StartCoroutine(HPBarDepleteAnim(P2HPMeter, (float) player2Monster.currentHP / (float) player2Monster.maxHP));
+            P2HPText.GetComponent<Text>().text = player2Monster.currentHP.ToString() + " / " + player2Monster.maxHP.ToString();
+            StartCoroutine(AnimationStateRestore(player2MonsterInstance));
+       }
        yield return new WaitForSeconds(0.7f);
        MoveNamePlate.SetActive(false);
+       StartCoroutine(CameraStateRestore());
+    }
+
+
+    public IEnumerator PlayFaintAnimP1(){
+       cameraController.SetActive(false);
+       P1Cam.SetActive(true);
+       if((player1MonsterInstance).GetComponent<Animator>() != null){
+            (player1MonsterInstance).GetComponent<Animator>().SetBool("Die", true);
+       }
+       yield return new WaitForSeconds(1);
+       Destroy(player1MonsterInstance);
+    }
+
+    public IEnumerator PlayBuffAnimP1(Move move){
+       cameraController.SetActive(false);
+       P1Cam.SetActive(true);
+       MoveNamePlate.GetComponentInChildren<Text>().text = move.name;
+       MoveNamePlate.SetActive(true);
+       if((player1MonsterInstance).GetComponent<Animator>() != null){
+            (player1MonsterInstance).GetComponent<Animator>().SetBool("Attack 02", true);
+       }
+       yield return new WaitForSeconds(1);
+       P1Cam.SetActive(false);
+       cameraController.SetActive(true);
+       MoveNamePlate.SetActive(false);
+    }
+
+    public IEnumerator PlayBuffAnimP2(Move move){
+       cameraController.SetActive(false);
+       P2Cam.SetActive(true);
+       MoveNamePlate.GetComponentInChildren<Text>().text = move.name;
+       MoveNamePlate.SetActive(true);
+       if((player2MonsterInstance).GetComponent<Animator>() != null){
+            (player2MonsterInstance).GetComponent<Animator>().SetBool("Attack 02", true);
+       }
+       yield return new WaitForSeconds(1);
+       P2Cam.SetActive(false);
+       cameraController.SetActive(true);
+
+       MoveNamePlate.SetActive(false);
+    }
+
+    public IEnumerator PlayFaintAnimP2(){
+       cameraController.SetActive(false);
+       P2Cam.SetActive(true);
+       if((player2MonsterInstance).GetComponent<Animator>() != null){
+            (player2MonsterInstance).GetComponent<Animator>().SetBool("Die", true);
+       }
+       yield return new WaitForSeconds(1);
+       Destroy(player2MonsterInstance);
     }
 
     public IEnumerator PlayAtkAnimP2(Move move){
@@ -174,14 +304,21 @@ public class combatController : MonoBehaviour
        MoveNamePlate.GetComponentInChildren<Text>().text = move.name;
        MoveNamePlate.SetActive(true);
        if((player2MonsterInstance).GetComponent<Animator>() != null){
-            (player2MonsterInstance).GetComponent<Animator>().SetBool("attacking", true);
+            (player2MonsterInstance).GetComponent<Animator>().SetBool("Attack 01", true);
             StartCoroutine(AnimationStateRestore(player2MonsterInstance));
        }
        yield return new WaitForSeconds(2);
        P1Cam.SetActive(true);
        P2Cam.SetActive(false);
-       yield return new WaitForSeconds(0.7f);
+       if((player1MonsterInstance).GetComponent<Animator>() != null){
+            (player1MonsterInstance).GetComponent<Animator>().SetBool("Take Damage", true);
+            StartCoroutine(HPBarDepleteAnim(P1HPMeter, (float) player1Monster.currentHP / (float) player1Monster.maxHP));
+            P1HPText.GetComponent<Text>().text = player1Monster.currentHP.ToString() + " / " + player1Monster.maxHP.ToString();
+            StartCoroutine(AnimationStateRestore(player1MonsterInstance));
+       }
+       yield return new WaitForSeconds((player1MonsterInstance).GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length);
        MoveNamePlate.SetActive(false);
+       StartCoroutine(CameraStateRestore());
     }
 
 
@@ -200,6 +337,26 @@ public class combatController : MonoBehaviour
             if(img.GetComponent<Image>().rectTransform.localScale.x < 0.2f){
                 img.GetComponent<Image>().color = new Color32(255, 0, 0, 255);
 
+            }
+        }
+
+        yield return new WaitForSeconds(1);
+    }
+
+    IEnumerator HPBarFillAnim(GameObject img, float targetWidth){
+        //P1HPMeter.GetComponent<Image>().rectTransform.localScale = new Vector3( (float) player1Monster.currentHP / (float) player1Monster.maxHP , 1, 1); 
+        Debug.Log("Target Width: " + targetWidth);
+        float aux = img.GetComponent<Image>().rectTransform.localScale.x;
+
+        while(img.GetComponent<Image>().rectTransform.localScale.x < targetWidth){
+            img.GetComponent<Image>().rectTransform.localScale = new Vector3(aux += 0.08f, 1, 1);
+            yield return new WaitForSeconds(0.014f);
+            if(img.GetComponent<Image>().rectTransform.localScale.x > 0.2f){
+                img.GetComponent<Image>().color = new Color32(252, 232, 0, 255);
+            }
+            if(img.GetComponent<Image>().rectTransform.localScale.x > 0.5f){
+                Debug.Log("Over Half");
+                img.GetComponent<Image>().color = new Color32(42, 134, 46, 255);
             }
         }
 
@@ -226,7 +383,8 @@ public class combatController : MonoBehaviour
 
     IEnumerator AnimationStateRestore(GameObject instance){
             yield return new WaitForSeconds(1.5f);
-            instance.GetComponent<Animator>().SetBool("attacking", false);
+            instance.GetComponent<Animator>().SetBool("Attack 01", false);
+            instance.GetComponent<Animator>().SetBool("Take Damage", false);
     }
 
 

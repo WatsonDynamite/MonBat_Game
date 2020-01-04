@@ -52,6 +52,13 @@ public class Monster
         }
     }
 
+    public void healDamage(int dmg){
+        currentHP = currentHP + dmg;
+        if(currentHP > maxHP){
+            currentHP = maxHP;
+        }
+    }
+
     public List<Move> getMoves(){
         List<Move> moves = new List<Move>();
         moves.Add(move1);

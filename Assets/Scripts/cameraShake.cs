@@ -28,7 +28,7 @@ public class cameraShake : MonoBehaviour
 
         //transform.localPosition = new Vector3(initPos.x + Mathf.Sin(Time.time * speedX) * intensity, initialPosition.y + Mathf.Sin(Time.time * speedY) * intensity, 0f);
         transform.localPosition = new Vector3( initPos.x + Mathf.PerlinNoise(0, Time.time * speedX),
-	                                           initPos. y + Mathf.PerlinNoise(1, Time.time * speedY),
+	                                           initPos.y + Mathf.PerlinNoise(1, Time.time * speedY),
 	                                            0
                                             ) * intensity;
         
