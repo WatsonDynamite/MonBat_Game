@@ -48,8 +48,8 @@ public class SecondaryEffect{
     public SecondaryEffectType type {get;}
 
     public SecondaryEffect(SecondaryEffectType ty, SecondaryEffectEffect ef){
-        effect = effect;
-        type = type;
+        effect = ef;
+        type = ty;
     }
 
 }

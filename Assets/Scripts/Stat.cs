@@ -13,6 +13,10 @@ public class Stat {
         stage = 0;
     }
 
+    public float getTrueValue(){
+        return value * statMod;
+    }
+
 
     public bool buffStat(){
         if(stage < 6){
@@ -57,6 +61,8 @@ public class Stat {
                 case -5:    statMod = 0.28f; break;
                 case -6:    statMod = 0.25f; break;
             }
+            Debug.Log("Stage: " + stage);
+            Debug.Log("Modifier: " + statMod);
             return true;
         }else{
             Debug.Log("This stat cannot go any lower!");
