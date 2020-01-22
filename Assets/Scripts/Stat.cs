@@ -13,12 +13,12 @@ public class Stat {
         stage = 0;
     }
 
-    public float getTrueValue(){
+    public float getTrueValue(){ //used to easily access a stat after modifiers. ALWAYS USE THIS FOR DAMAGE CALCULATION unless the move is supposed to ignore modifiers.
         return value * statMod;
     }
 
 
-    public bool buffStat(){
+    public bool buffStat(){ //boosts a stat one stage. I may have to allow this to receive an int for the number of stages intended to boost.
         if(stage < 6){
             stage++;
             switch (stage){
@@ -43,7 +43,7 @@ public class Stat {
         }
     }
 
-    public bool debuffStat(){
+    public bool debuffStat(){ //same as buffstat, but it lowes the stage instead of boosting it.
         if(stage > -6){
             stage--;
             switch (stage){

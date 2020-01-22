@@ -17,9 +17,16 @@ public class LoadP1MovesDynamic : MonoBehaviour
     public GameObject AtkBtn4;
 
     // Start is called before the first frame update
-    void Start()
+    void Start() 
     {
-        var moveList = combatController.getP1Moves();
+       LoadMovesIntoUI();
+    }
+
+    public void LoadMovesIntoUI(){
+         //in here we get the moves from the player's current active monster and make the buttons match them.
+         //We add a listener to each button
+
+        var moveList = combatController.getP1Moves(); 
         AtkBtnList.SetActive(false);
         AtkBtn1.GetComponentInChildren<Text>().text = moveList[0].name + " (" + moveList[0].type + ")";
             AtkBtn1.GetComponent<Image>().color = colorByType(moveList[0].type);
@@ -38,12 +45,13 @@ public class LoadP1MovesDynamic : MonoBehaviour
             AtkBtn4.GetComponent<Button>().onClick.AddListener(delegate {turnQueuer(moveList[3]);});
     }
 
-    private void turnQueuer(Move playerMove){
+    private void turnQueuer(Move playerMove){ //this gets both moves from each monster and begins the turn
         Debug.Log("Move selected: " + playerMove.name);
         List<Move> enemyMoveList = combatController.getP2Moves();
         Move enemyMove = enemyMoveList[Random.Range(0, enemyMoveList.Count - 1)];
         Debug.Log("Enemy move: " + enemyMove.name);
-        combatController.ExecuteTurn(playerMove, enemyMove);
+        StartCoroutine(combatController.ExecuteTurn(playerMove, enemyMove));
+        ToggleMoveList();
         
     }
 
@@ -53,7 +61,7 @@ public class LoadP1MovesDynamic : MonoBehaviour
         
     }
 
-    private Color colorByType(Type type){
+    private Color colorByType(Type type){ //returns different colors for every type. This will eventually be changed when the UI is made prettier
         Color temp = new Color32(0, 0, 0, 255);
         switch(type){
             case Type.NONE: temp = new Color32(0, 0, 0, 255); break;
@@ -75,7 +83,7 @@ public class LoadP1MovesDynamic : MonoBehaviour
         return temp;
     } 
 
-    public void ToggleMoveList(){
+    public void ToggleMoveList(){ //this is behavior for the "Fight" button
         if(AtkBtnList.activeSelf){
             AtkBtnList.SetActive(false);
             FightButtonText.GetComponentInChildren<Text>().text = "Fight";

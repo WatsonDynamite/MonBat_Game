@@ -1,4 +1,17 @@
-﻿using UnityEngine;
+﻿
+/*
+
+
+THIS IS NOT USED ANYMORE BECAUSE ALL IT DID WAS CAUSE PROBLEMS
+ALSO IT LOOKED LIKE SHIT
+
+
+ */
+
+
+
+
+using UnityEngine;
 using System.Collections;
 
 public class cameraShake : MonoBehaviour

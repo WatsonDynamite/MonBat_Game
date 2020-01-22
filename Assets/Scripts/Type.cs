@@ -4,7 +4,7 @@ using System.Reflection;
 
 public enum Type
 {
-    NONE, //(for secondary types / error handling)
+    NONE, //default type for empty secondary types / error handling, make sure there is no null in types)
     WATER,
     FIRE,
     NATURE,
@@ -26,6 +26,9 @@ public class TypeUtils
 {
 //horizontal: attacking type
 //vertical: defending type
+//this is a mess to read, but I haven't found any other way. I'll eventually make this a chart for easy access.
+//I wish VSCode had colored comments...
+
    private static float[,] typeChart = new float[15, 15] {
 /*NONE*/{/*NON*/1,  /*WTR*/1,   /*FIR*/1,   /*NTR*/1,   /*ICE*/1,   /*ELC*/1,   /*TOX*/1,   /*SHD*/1,   /*MND*/1,   /*LGT*/1,   /*MRT*/1,   /*ERT*/1,   /*MTL*/1,   /*WND*/1,   /*ARC*/1},
 /*WATR*/{/*NON*/1,  /*WTR*/0.5f,/*FIR*/2,   /*NTR*/0.5f,/*ICE*/0.5f,/*ELC*/2,   /*TOX*/2,   /*SHD*/1,   /*MND*/1,   /*LGT*/1,   /*MRT*/1,   /*ERT*/2,   /*MTL*/1,   /*WND*/1,   /*ARC*/1},
@@ -44,7 +47,7 @@ public class TypeUtils
 /*ARCN*/{/*NON*/1,  /*WTR*/1,   /*FIR*/1,   /*NTR*/1,   /*ICE*/1,   /*ELC*/1,   /*TOX*/1,   /*SHD*/2,   /*MND*/1,   /*LGT*/0.5f,/*MRT*/1,   /*ERT*/1,   /*MTL*/0.5f,/*WND*/1,   /*ARC*/2}
 }; 
 
-public static float Effectiveness(Type attackType, Type defendType){
+public static float Effectiveness(Type attackType, Type defendType){ //receives two types, and returns the effectiveness of the first type towards the second in the form of a float.
        return typeChart[(int) attackType, (int) defendType];
 }
 }
