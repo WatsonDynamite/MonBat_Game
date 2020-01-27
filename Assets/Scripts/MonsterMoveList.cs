@@ -35,11 +35,11 @@ public static class MoveList
         fireball = new Move("Fireball", "The enemy is singed with a small fireball.", 50, 2, Type.FIRE, Category.PHYSICAL, null);
         droplet = new Move("Droplet", "The enemy is soaked with a small droplet.", 180, 2, Type.WATER, Category.SPECIAL, null);
         prod = new Move("Prod", "The enemy is prodded with a small branch.", 30, 2, Type.NATURE, Category.PHYSICAL, null);
-        rumble = new Move("Rumble", "The user makes the ground rumble\n slightly, tripping the opponent.", 50, 2, Type.EARTH, Category.PHYSICAL, null);
+        rumble = new Move("Rumble", "The user makes the ground rumble slightly, tripping the opponent.", 50, 2, Type.EARTH, Category.PHYSICAL, null);
         shock = new Move("Shock", "The enemy is lightly shocked by electrity.", 50, 2, Type.ELECTRIC, Category.SPECIAL, null);
-        recover = new Move("Recover", "The user bathes in light,\nhealing 50% of its health.", 0, 2, Type.LIGHT, Category.STATUS, new SecondaryEffect[] {SecondaryEffectList.effectHeal});
-        intimidate = new Move("Intimidate", "The user intimidates the opponent,\nlowering their Attack stat by one stage.", 0, 2, Type.SHADOW, Category.STATUS, new SecondaryEffect[]{SecondaryEffectList.effectDefDown});
-        sabotage = new Move("Sabotage", "The user strikes the opponent, raising\ntheir own speed and lowering the enemy's defense.", 10, 2, Type.MARTIAL, Category.PHYSICAL, new SecondaryEffect[]{SecondaryEffectList.effectDefDown, SecondaryEffectList.effectSpeedUp});
+        recover = new Move("Recover", "The user bathes in light, healing 50% of its health.", 0, 2, Type.LIGHT, Category.STATUS, new SecondaryEffect[] {SecondaryEffectList.effectHeal});
+        intimidate = new Move("Intimidate", "The user intimidates the opponent, lowering their Attack stat by one stage.", 0, 2, Type.SHADOW, Category.STATUS, new SecondaryEffect[]{SecondaryEffectList.effectDefDown});
+        sabotage = new Move("Sabotage", "The user strikes the opponent, raising their own speed and lowering the enemy's defense.", 10, 2, Type.MARTIAL, Category.PHYSICAL, new SecondaryEffect[]{SecondaryEffectList.effectDefDown, SecondaryEffectList.effectSpeedUp});
 
     }    
 }

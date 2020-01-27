@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class combatController : MonoBehaviour {
+public class CombatController : MonoBehaviour {
 
     int turnCounter;
 
     public GameObject player1Spawn;
     public GameObject player2Spawn;
 
-    private Monster player1Monster;
-    private Monster player2Monster;
+    public Monster player1Monster;
+    public Monster player2Monster;
 
     //this is the model that is loaded on the scene
     private GameObject player1MonsterInstance;
@@ -613,7 +613,7 @@ public class combatController : MonoBehaviour {
 
     public List<Move> getP1Moves () {
         if (player1Monster != null) {
-            return new List<Move> { player1Monster.move1, player1Monster.move2, player1Monster.move3, player1Monster.move4 };
+            return new List<Move> {player1Monster.move1, player1Monster.move2, player1Monster.move3, player1Monster.move4};
         }
         return null;
     }

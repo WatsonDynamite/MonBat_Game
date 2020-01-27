@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Reflection;
 
 public enum Type
@@ -28,6 +29,7 @@ public class TypeUtils
 //vertical: defending type
 //this is a mess to read, but I haven't found any other way. I'll eventually make this a chart for easy access.
 //I wish VSCode had colored comments...
+   private static Sprite[] typesprites = Resources.LoadAll<Sprite>("UISprites/typesymbs"); 
 
    private static float[,] typeChart = new float[15, 15] {
 /*NONE*/{/*NON*/1,  /*WTR*/1,   /*FIR*/1,   /*NTR*/1,   /*ICE*/1,   /*ELC*/1,   /*TOX*/1,   /*SHD*/1,   /*MND*/1,   /*LGT*/1,   /*MRT*/1,   /*ERT*/1,   /*MTL*/1,   /*WND*/1,   /*ARC*/1},
@@ -50,4 +52,8 @@ public class TypeUtils
 public static float Effectiveness(Type attackType, Type defendType){ //receives two types, and returns the effectiveness of the first type towards the second in the form of a float.
        return typeChart[(int) attackType, (int) defendType];
 }
+
+public static Sprite spriteByType(Type type){ //returns the different symbol images for every type from the spritesheet. This will eventually be changed when the UI is made prettier
+       return typesprites[(int) type]; //can't believe this works
+    } 
 }

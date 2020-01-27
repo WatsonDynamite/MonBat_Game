@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class LoadP1MovesDynamic : MonoBehaviour
 {
-    public combatController combatController;
+    public CombatController combatController;
 
     //UI BUTTONS
      [Header("UI Buttons")]
@@ -16,9 +16,23 @@ public class LoadP1MovesDynamic : MonoBehaviour
     public GameObject AtkBtn3;
     public GameObject AtkBtn4;
 
+    [Header("Tooltip Objects")]
+    public GameObject MoveToolTip;
+
+    
+    private Sprite[] categsprites;
+    private List<Move> moveList;
+
+    void Awake()
+    {
+       
+    }
+
     // Start is called before the first frame update
     void Start() 
-    {
+    {  
+       moveList = combatController.getP1Moves();
+       categsprites = Resources.LoadAll<Sprite>("UISprites/PhysSpecStaInd");
        LoadMovesIntoUI();
     }
 
@@ -26,22 +40,22 @@ public class LoadP1MovesDynamic : MonoBehaviour
          //in here we get the moves from the player's current active monster and make the buttons match them.
          //We add a listener to each button
 
-        var moveList = combatController.getP1Moves(); 
         AtkBtnList.SetActive(false);
-        AtkBtn1.GetComponentInChildren<Text>().text = moveList[0].name + " (" + moveList[0].type + ")";
-            AtkBtn1.GetComponent<Image>().color = colorByType(moveList[0].type);
+        AtkBtn1.GetComponentInChildren<Text>().text = moveList[0].name;
+           AtkBtn1.GetComponentsInChildren<Image>()[1].sprite = TypeUtils.spriteByType(moveList[0].type);
            AtkBtn1.GetComponent<Button>().onClick.AddListener(delegate {turnQueuer(moveList[0]);});
+           //AtkBtn1.GetComponent<Button>().onMouseOver.AddListener(delegate {ToolTipSnapToCursor();});
 
-        AtkBtn2.GetComponentInChildren<Text>().text = moveList[1].name + " (" + moveList[1].type + ")";
-            AtkBtn2.GetComponent<Image>().color = colorByType(moveList[1].type);
+        AtkBtn2.GetComponentInChildren<Text>().text = moveList[1].name;
+            AtkBtn2.GetComponentsInChildren<Image>()[1].sprite = TypeUtils.spriteByType(moveList[1].type);
             AtkBtn2.GetComponent<Button>().onClick.AddListener(delegate {turnQueuer(moveList[1]);});
 
-        AtkBtn3.GetComponentInChildren<Text>().text = moveList[2].name + " (" + moveList[2].type + ")";;
-            AtkBtn3.GetComponent<Image>().color = colorByType(moveList[2].type);
+        AtkBtn3.GetComponentInChildren<Text>().text = moveList[2].name;
+            AtkBtn3.GetComponentsInChildren<Image>()[1].sprite = TypeUtils.spriteByType(moveList[2].type);
             AtkBtn3.GetComponent<Button>().onClick.AddListener(delegate {turnQueuer(moveList[2]);});
 
-        AtkBtn4.GetComponentInChildren<Text>().text = moveList[3].name + " (" + moveList[3].type + ")";;
-            AtkBtn4.GetComponent<Image>().color = colorByType(moveList[3].type);
+        AtkBtn4.GetComponentInChildren<Text>().text = moveList[3].name;
+            AtkBtn4.GetComponentsInChildren<Image>()[1].sprite = TypeUtils.spriteByType(moveList[3].type);
             AtkBtn4.GetComponent<Button>().onClick.AddListener(delegate {turnQueuer(moveList[3]);});
     }
 
@@ -60,6 +74,15 @@ public class LoadP1MovesDynamic : MonoBehaviour
     {
         
     }
+
+    /* 
+    private Sprite spriteByType(Type type){ //returns the different symbol images for every type from the spritesheet. This will eventually be changed when the UI is made prettier
+       return typesprites[(int) type]; //can't believe this works
+    } 
+    */
+
+
+
 
     private Color colorByType(Type type){ //returns different colors for every type. This will eventually be changed when the UI is made prettier
         Color temp = new Color32(0, 0, 0, 255);
@@ -92,4 +115,36 @@ public class LoadP1MovesDynamic : MonoBehaviour
             FightButtonText.GetComponentInChildren<Text>().text = "Back";
         }
     }
+
+    public void EnableMoveToolTip(GameObject btn){
+        Move move = MoveList.moveNone;
+        ToolTipSnapToCursor();
+        MoveToolTip.SetActive(true);
+            if(btn == AtkBtn1){
+                    move = moveList[0];
+            }
+            else if(btn == AtkBtn2){
+                    move = moveList[1];
+            }
+            else if(btn == AtkBtn3){
+                    move = moveList[2];
+            }
+            else if(btn == AtkBtn4){
+                    move = moveList[3];
+            }
+        MoveToolTip.transform.Find("Txt_Name").GetComponent<Text>().text = move.name;
+        MoveToolTip.transform.Find("Txt_Description").GetComponent<Text>().text = move.desc;
+        MoveToolTip.transform.Find("Txt_Cost").GetComponent<Text>().text = move.cost.ToString();
+        MoveToolTip.transform.Find("Txt_Power").GetComponent<Text>().text = move.power.ToString() == "0"? "--": move.power.ToString();
+        MoveToolTip.transform.Find("Image").GetComponent<Image>().sprite = categsprites[(int) move.cat];
+    }
+
+    public void DisableMoveToolTip(){
+        MoveToolTip.SetActive(false);
+    }
+
+    public void ToolTipSnapToCursor(){
+        MoveToolTip.transform.position = new Vector3(Input.mousePosition.x + 6, Input.mousePosition.y + 6, Input.mousePosition.z);
+    }
+
 }
