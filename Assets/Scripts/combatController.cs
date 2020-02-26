@@ -10,6 +10,9 @@ public class CombatController : MonoBehaviour {
     public GameObject player1Spawn;
     public GameObject player2Spawn;
 
+    public List<Monster> player1Party;
+    public List<Monster> player2Party;
+
     public Monster player1Monster;
     public Monster player2Monster;
 
@@ -59,8 +62,12 @@ public class CombatController : MonoBehaviour {
     delegate IEnumerator DebuffAnim (Move move);
 
     void Awake () {
-        player1Monster = MonsterList.testMon1;
-        player2Monster = MonsterList.testMon2;
+
+        player1Party = new List<Monster>() { MonsterList.testMon1, MonsterList.testMon2, MonsterList.monsterNone, MonsterList.monsterNone, MonsterList.monsterNone, MonsterList.monsterNone, };
+        player2Party = new List<Monster>() { MonsterList.testMon2, MonsterList.testMon1, MonsterList.monsterNone, MonsterList.monsterNone, MonsterList.monsterNone, MonsterList.monsterNone, };
+
+        player1Monster = player1Party[0];
+        player2Monster = player2Party[0];
 
         WriteToLog ("Player 1 sent out " + player1Monster.name + "!");
         WriteToLog ("Player 2 sent out " + player2Monster.name + "!");
@@ -88,6 +95,7 @@ public class CombatController : MonoBehaviour {
     void Update () { }
 
     public IEnumerator ExecuteTurn (Move player1Move, Move player2Move) {
+        Debug.Log("Starting turn");
         if (isTurnInProgress) {
             yield break;
         }
@@ -96,9 +104,17 @@ public class CombatController : MonoBehaviour {
         var speedDiff = player1Monster.SPEED.getTrueValue () - player2Monster.SPEED.getTrueValue ();
         //if positive, player 1 is attacker. If negative, player 2 is attacker. If 0, speed tie.
 
-        //currently, nothing happens on a speed tie. I will have to decide on that later. I don't want it to be RNG.
+        
 
         WriteToLog ("--- TURN " + turnCounter + " ---");
+
+        //currently, on a speed tie the turn order is picked at random. I will have to decide on something else later. I don't want it to be RNG.
+
+        if (speedDiff == 0)
+        {
+            speedDiff = Random.Range(-1, 1);
+        }
+
         if (speedDiff > 0) {
             Debug.Log ("Peep");
             seq.Add (DoMoves (player1Move, player1Monster, player2Monster));
@@ -625,4 +641,13 @@ public class CombatController : MonoBehaviour {
         return null;
     }
 
+    public List<Monster> getP1Party()
+    {
+        return player1Party;
+    }
+
+    public List<Monster> getP2Party()
+    {
+        return player2Party;
+    }
 }
