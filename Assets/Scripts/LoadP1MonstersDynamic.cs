@@ -26,7 +26,6 @@ public class LoadP1MonstersDynamic : MonoBehaviour
     private List<Monster> party;
 
     private List<GameObject> btnListAux;
-    private int indAux = 0;
 
     void Awake()
     {
@@ -46,56 +45,48 @@ public class LoadP1MonstersDynamic : MonoBehaviour
         //in here we get the monsters from the player's party and make the buttons match them.
         //We add a listener to each button
         party = combatController.getP1Party();
-        Debug.Log(party[0].name);
         //MonBtnList.SetActive(false);
        
+        int ind = 0;
         foreach (GameObject button in btnListAux)
         {
-            button.GetComponentInChildren<Text>().text = party[indAux].name;
+            
+            button.GetComponentInChildren<Text>().text = party[ind].name;
+            var indAux = ind;
+            button.GetComponentInChildren<Button>().onClick.AddListener(delegate {turnQueuer(new TurnAction(party[indAux]));});
 
-            if (party[indAux].HP.value == 0 || party[indAux] == combatController.player1Monster)
+            if (party[ind].HP.value == 0 || party[ind] == combatController.player1Monster)
             {
                 button.GetComponentInChildren<Button>().interactable = false;
-                if (party[indAux].HP.value == 0)
+                if (party[ind].HP.value == 0)
                 {
                     button.GetComponentInChildren<Text>().text += "[FNT]";
                 }
+            }else{
+                button.GetComponentInChildren<Button>().interactable = true;
             }
-            if(party[indAux] == MonsterList.monsterNone)
+            if(party[ind].type1 == MonsterList.monsterNone.type1) //type1 should never be null so this is a safe comparison
             {
                 button.SetActive(false);
+            }else{
+                button.SetActive(true);
             }
+            
+            
 
-            indAux++;
+            ind++;
         }
 
-
-        /*
-        MonBtn1.GetComponentInChildren<Text>().text = party[0].name;
-        //AtkBtn1.GetComponent<Button>().onClick.AddListener(delegate { turnQueuer(moveList[0]); });
-        //AtkBtn1.GetComponent<Button>().onMouseOver.AddListener(delegate {ToolTipSnapToCursor();});
-
-        AtkBtn2.GetComponentInChildren<Text>().text = party[1].name;
-        AtkBtn2.GetComponentsInChildren<Image>()[1].sprite = TypeUtils.spriteByType(moveList[1].type);
-        AtkBtn2.GetComponent<Button>().onClick.AddListener(delegate { turnQueuer(moveList[1]); });
-
-        AtkBtn3.GetComponentInChildren<Text>().text = moveList[2].name;
-        AtkBtn3.GetComponentsInChildren<Image>()[1].sprite = TypeUtils.spriteByType(moveList[2].type);
-        AtkBtn3.GetComponent<Button>().onClick.AddListener(delegate { turnQueuer(moveList[2]); });
-
-        AtkBtn4.GetComponentInChildren<Text>().text = moveList[3].name;
-        AtkBtn4.GetComponentsInChildren<Image>()[1].sprite = TypeUtils.spriteByType(moveList[3].type);
-        AtkBtn4.GetComponent<Button>().onClick.AddListener(delegate { turnQueuer(moveList[3]); });
-        */
     }
 
-    private void turnQueuer(Move playerMove)
+    private void turnQueuer(TurnAction playerAction)
     { //this gets both moves from each monster and begins the turn
-        Debug.Log("Move selected: " + playerMove.name);
+        Debug.Log("Action selected: Switch");
+        Debug.Log("Monster selected: " + playerAction.monster.name);
         List<Move> enemyMoveList = combatController.getP2Moves();
         Move enemyMove = enemyMoveList[Random.Range(0, enemyMoveList.Count - 1)];
         Debug.Log("Enemy move: " + enemyMove.name);
-        StartCoroutine(combatController.ExecuteTurn(playerMove, enemyMove));
+        StartCoroutine(combatController.ExecuteTurn(playerAction, new TurnAction(enemyMove)));
         ToggleMonsterList();
 
     }
@@ -103,7 +94,15 @@ public class LoadP1MonstersDynamic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+             if(combatController.reloadAI){
+            LoadMonstersIntoUI();
+            }
+            
+        if(combatController.isTurnInProgress){
+            GetComponent<Button>().interactable = false;
+        }else{
+            GetComponent<Button>().interactable = true;
+        }
     }
 
     /* 
@@ -158,9 +157,9 @@ public class LoadP1MonstersDynamic : MonoBehaviour
         MoveToolTip.transform.Find("Image").GetComponent<Image>().sprite = categsprites[(int)move.cat];
     }
 
-    public void DisableMoveToolTip()
+    public void DisableMonsterToolTip()
     {
-        MoveToolTip.SetActive(false);
+        MibsrerToolTip.SetActive(false);
     }
 
     public void ToolTipSnapToCursor()

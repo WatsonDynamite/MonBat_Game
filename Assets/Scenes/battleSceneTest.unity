@@ -243,6 +243,7 @@ MonoBehaviour:
   speedUpIndP1: {fileID: 1875681986}
   speedUpIndP2: {fileID: 1725626443}
   isTurnInProgress: 0
+  reloadAI: 0
 --- !u!4 &32620763
 Transform:
   m_ObjectHideFlags: 0
@@ -4197,7 +4198,7 @@ RectTransform:
   - {fileID: 1668020710}
   - {fileID: 280333197}
   m_Father: {fileID: 1922376626}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -10525,8 +10526,8 @@ RectTransform:
   - {fileID: 1354776862}
   - {fileID: 1237315277}
   - {fileID: 1120259756}
-  - {fileID: 1942154407}
   - {fileID: 824600652}
+  - {fileID: 1942154407}
   - {fileID: 676473573}
   - {fileID: 269748935}
   - {fileID: 1437121874}
@@ -10668,7 +10669,7 @@ RectTransform:
   - {fileID: 592011053}
   - {fileID: 930277792}
   m_Father: {fileID: 1922376626}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

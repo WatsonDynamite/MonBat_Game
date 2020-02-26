@@ -44,34 +44,35 @@ public class LoadP1MovesDynamic : MonoBehaviour
         AtkBtnList.SetActive(false);
             AtkBtn1.GetComponentInChildren<Text>().text = moveList[0].name;
            AtkBtn1.GetComponentsInChildren<Image>()[1].sprite = TypeUtils.spriteByType(moveList[0].type);
-           AtkBtn1.GetComponent<Button>().onClick.AddListener(delegate {turnQueuer(moveList[0]);});
+           AtkBtn1.GetComponent<Button>().onClick.AddListener(delegate {turnQueuer(new TurnAction(moveList[0]));});
            AtkBtn1.GetComponent<Button>().onClick.AddListener(delegate { DisableMoveToolTip(); });
         //AtkBtn1.GetComponent<Button>().onMouseOver.AddListener(delegate {ToolTipSnapToCursor();});
 
             AtkBtn2.GetComponentInChildren<Text>().text = moveList[1].name;
             AtkBtn2.GetComponentsInChildren<Image>()[1].sprite = TypeUtils.spriteByType(moveList[1].type);
-            AtkBtn2.GetComponent<Button>().onClick.AddListener(delegate {turnQueuer(moveList[1]);});
+            AtkBtn2.GetComponent<Button>().onClick.AddListener(delegate {turnQueuer(new TurnAction(moveList[1]));});
             AtkBtn2.GetComponent<Button>().onClick.AddListener(delegate { DisableMoveToolTip(); });
 
             AtkBtn3.GetComponentInChildren<Text>().text = moveList[2].name;
             AtkBtn3.GetComponentsInChildren<Image>()[1].sprite = TypeUtils.spriteByType(moveList[2].type);
-            AtkBtn3.GetComponent<Button>().onClick.AddListener(delegate {turnQueuer(moveList[2]);});
+            AtkBtn3.GetComponent<Button>().onClick.AddListener(delegate {turnQueuer(new TurnAction(moveList[2]));});
             AtkBtn3.GetComponent<Button>().onClick.AddListener(delegate { DisableMoveToolTip(); });
 
             AtkBtn4.GetComponentInChildren<Text>().text = moveList[3].name;
             AtkBtn4.GetComponentsInChildren<Image>()[1].sprite = TypeUtils.spriteByType(moveList[3].type);
-            AtkBtn4.GetComponent<Button>().onClick.AddListener(delegate {turnQueuer(moveList[3]);});
+            AtkBtn4.GetComponent<Button>().onClick.AddListener(delegate {turnQueuer(new TurnAction(moveList[3]));});
             AtkBtn4.GetComponent<Button>().onClick.AddListener(delegate { DisableMoveToolTip(); });
     }
 
-    private void turnQueuer(Move playerMove){ //this gets both moves from each monster and begins the turn
-        Debug.Log("Move selected: " + playerMove.name);
+    private void turnQueuer(TurnAction playerAction){ //this gets both moves from each monster and begins the turn
+        Debug.Log("Action selected: Move");
+        Debug.Log("Move selected: " + playerAction.move.name);
         //player 2 (CPU) picks a move at random
         List<Move> enemyMoveList = combatController.getP2Moves();
         Move enemyMove = enemyMoveList[Random.Range(0, enemyMoveList.Count - 1)];
         Debug.Log("Enemy move: " + enemyMove.name);
 
-        StartCoroutine(combatController.ExecuteTurn(playerMove, enemyMove));
+        StartCoroutine(combatController.ExecuteTurn(playerAction, new TurnAction(enemyMove)));
         ToggleMoveList();
         
     }
@@ -79,7 +80,14 @@ public class LoadP1MovesDynamic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(combatController.reloadAI){
+            LoadMovesIntoUI();
+        }
+        if(combatController.isTurnInProgress){
+            GetComponent<Button>().interactable = false;
+        }else{
+            GetComponent<Button>().interactable = true;
+        }
     }
 
     /* 

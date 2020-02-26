@@ -64,7 +64,7 @@ public class cameraController : MonoBehaviour
     IEnumerator CameraSwap(){
         List<KeyValuePair<GameObject, float>> cameraShuffled = Fisher_Yates_CardDeck_Shuffle(cameras);
         foreach(KeyValuePair<GameObject, float> cam in cameraShuffled){
-            Debug.Log(cam);
+           // Debug.Log(cam);
             cam.Key.SetActive(true);
             yield return new WaitForSeconds(cam.Value);
             cam.Key.SetActive(false);
