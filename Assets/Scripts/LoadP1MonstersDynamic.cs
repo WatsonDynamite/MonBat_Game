@@ -18,8 +18,6 @@ public class LoadP1MonstersDynamic : MonoBehaviour
     public GameObject MonBtn5;
     public GameObject MonBtn6;
 
-    [Header("Tooltip Objects")]
-    public GameObject MoveToolTip;
 
 
     private Sprite[] categsprites;
@@ -94,7 +92,7 @@ public class LoadP1MonstersDynamic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-             if(combatController.reloadAI){
+             if(combatController.reloadUI){
             LoadMonstersIntoUI();
             }
             
@@ -125,6 +123,15 @@ public class LoadP1MonstersDynamic : MonoBehaviour
         {
             MonBtnList.SetActive(true);
             SwitchButtonText.GetComponentInChildren<Text>().text = "Back";
+        }
+    }
+
+    public void DisableMonsterList()
+    { 
+        if (MonBtnList.activeSelf)
+        {
+            MonBtnList.SetActive(false);
+            SwitchButtonText.GetComponentInChildren<Text>().text = "Switch";
         }
     }
 

@@ -80,7 +80,7 @@ public class LoadP1MovesDynamic : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(combatController.reloadAI){
+        if(combatController.reloadUI){
             LoadMovesIntoUI();
         }
         if(combatController.isTurnInProgress){
@@ -128,6 +128,13 @@ public class LoadP1MovesDynamic : MonoBehaviour
         }else{
             AtkBtnList.SetActive(true);
             FightButtonText.GetComponentInChildren<Text>().text = "Back";
+        }
+    }
+
+    public void DisableMoveList(){
+        if(AtkBtnList.activeSelf){
+            AtkBtnList.SetActive(false);
+            FightButtonText.GetComponentInChildren<Text>().text = "Fight";
         }
     }
 

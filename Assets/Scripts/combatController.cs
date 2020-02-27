@@ -48,7 +48,7 @@ public class CombatController : MonoBehaviour {
     public GameObject speedUpIndP2;
 
     public bool isTurnInProgress;
-    public bool reloadAI = false;
+    public bool reloadUI = false;
     
 
     delegate IEnumerator AtkAnim (Move move);
@@ -79,10 +79,9 @@ public class CombatController : MonoBehaviour {
         turnCounter = 1;
         isTurnInProgress = false;
         //fill UI
-        P1HPText.GetComponent<Text> ().text = player1Monster.currentHP.ToString () + " / " + player1Monster.maxHP.ToString ();
-        P2HPText.GetComponent<Text> ().text = player2Monster.currentHP.ToString () + " / " + player2Monster.maxHP.ToString ();
-        P1MonsterName.GetComponent<Text> ().text = player1Monster.name;
-        P2MonsterName.GetComponent<Text> ().text = player2Monster.name;
+
+        LoadHPPlates();
+
 
         //spawn monsters
         player1MonsterInstance = Instantiate (player1Monster.model as GameObject, player1Spawn.transform.position, player1Spawn.transform.rotation);
@@ -180,7 +179,7 @@ public class CombatController : MonoBehaviour {
 
     public IEnumerator SwapMon(Monster current, Monster newMon){
         Debug.Log("Doing Switching!");
-        reloadAI = true;
+        reloadUI = true;
         GameObject camr = P1Cam;
         SwitchAnim SwitchAnimDel = new SwitchAnim(PlayBuffAnimP1);
         Debug.Log(current.name);
@@ -213,9 +212,11 @@ public class CombatController : MonoBehaviour {
             player2Monster = newMon;
         }
         yield return SwitchAnimDel();
+        LoadHPPlates();
         yield return new WaitForSeconds(animationTime);
+        
         camr.SetActive(false);
-        reloadAI = false;
+        reloadUI = false;
         cameraController.SetActive(true);
     }
 
@@ -433,6 +434,12 @@ public class CombatController : MonoBehaviour {
 
     //REFRESH UI ELEMENTS
 
+    public void LoadHPPlates(){
+        P1HPText.GetComponent<Text> ().text = player1Monster.currentHP.ToString () + " / " + player1Monster.maxHP.ToString ();
+        P2HPText.GetComponent<Text> ().text = player2Monster.currentHP.ToString () + " / " + player2Monster.maxHP.ToString ();
+        P1MonsterName.GetComponent<Text> ().text = player1Monster.name;
+        P2MonsterName.GetComponent<Text> ().text = player2Monster.name;
+    }
 
     //ATK ANIMS
 

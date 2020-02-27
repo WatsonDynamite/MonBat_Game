@@ -12,6 +12,15 @@ public class MouseOverMonsterTooltip : MonoBehaviour
     public GameObject HPP1;
     public GameObject HPP2;
 
+    public GameObject switchMonsterToolTip;
+    public GameObject switchButton1;
+    public GameObject switchButton2;
+    public GameObject switchButton3;
+    public GameObject switchButton4;
+    public GameObject switchButton5;
+    public GameObject switchButton6;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -71,7 +80,7 @@ public class MouseOverMonsterTooltip : MonoBehaviour
     }
 
     
-    public void DisableMoveToolTip(GameObject HPPlate){
+    public void DisableMonsterToolTip(GameObject HPPlate){
         if(HPPlate == HPP1){
             monster1ToolTip.SetActive(false);
             UnsetStatBarLength(monster1ToolTip.transform.Find("HPStatMeter").GetComponent<Image>());
@@ -90,6 +99,44 @@ public class MouseOverMonsterTooltip : MonoBehaviour
             UnsetStatBarLength(monster2ToolTip.transform.Find("SpeStatMeter").GetComponent<Image>());
         }
     } 
+
+
+    public void EnableSwitchToolTip(GameObject button){
+        Monster aux = null;
+        if(button == switchButton1){aux = combatController.player1Party[0];}
+        else if(button == switchButton2){aux = combatController.player1Party[1];}
+        else if(button == switchButton3){aux = combatController.player1Party[2];}
+        else if(button == switchButton4){aux = combatController.player1Party[3];}
+        else if(button == switchButton5){aux = combatController.player1Party[4];}
+        else if(button == switchButton6){aux = combatController.player1Party[5];}
+
+            switchMonsterToolTip.SetActive(true);
+            switchMonsterToolTip.transform.Find("Img_type1").GetComponent<Image>().sprite = TypeUtils.spriteByType(aux.type1);
+            if(aux.type2 == Type.NONE){
+                switchMonsterToolTip.transform.Find("Img_type2").GetComponent<Image>().sprite = null;
+            }else{
+                switchMonsterToolTip.transform.Find("Img_type2").GetComponent<Image>().sprite = TypeUtils.spriteByType(aux.type2);
+            }
+            switchMonsterToolTip.transform.Find("TextName").GetComponent<Text>().text =  aux.name;
+            switchMonsterToolTip.transform.Find("TextHP").GetComponent<Text>().text =    aux.HP.value.ToString();
+            switchMonsterToolTip.transform.Find("TextAtk").GetComponent<Text>().text =   aux.ATK.value.ToString();
+            switchMonsterToolTip.transform.Find("TextDef").GetComponent<Text>().text =   aux.DEF.value.ToString();
+            switchMonsterToolTip.transform.Find("TextSpAtk").GetComponent<Text>().text = aux.spATK.value.ToString();
+            switchMonsterToolTip.transform.Find("TextSpDef").GetComponent<Text>().text = aux.spDEF.value.ToString();
+            switchMonsterToolTip.transform.Find("TextSpe").GetComponent<Text>().text =   aux.SPEED.value.ToString();
+
+            SetStatBarLength(monster1ToolTip.transform.Find("HPStatMeter").GetComponent<Image>(), aux.currentHP);
+            switchMonsterToolTip.transform.Find("TextHPCurrent").GetComponent<Text>().text =    aux.currentHP.ToString() + " / " + aux.maxHP.ToString();
+    }
+
+
+    public void DisableSwitchToolTip(){
+        switchMonsterToolTip.SetActive(false);
+        UnsetStatBarLength(monster1ToolTip.transform.Find("HPStatMeter").GetComponent<Image>());
+    }
+
+
+
 
     public void ToolTipSnapToCursor(GameObject HPPlate){
       //  moveToolTip.transform.position = new Vector3(Input.mousePosition.x + 6, Input.mousePosition.y + 6, Input.mousePosition.z);
