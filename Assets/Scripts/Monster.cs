@@ -9,7 +9,7 @@ public class Monster
     public Type type1 {get;} //first type. Always fill.
     public Type type2 {get;} //secondary type. Use NONE if none. NEVER LEAVE AS 'NULL'
 
-    public int maxHP {get; set;} //max health value (used for healing calculations and to display to the user). DO NOT CONFUSE WITH THE HP STAT ITSELF, BECAUSE I DID
+    public int maxHP {get; set;} //max health value (used for healing calculations and to display to the user). DO NOT CONFUSE WITH THE HP STAT ITSELF, BECAUSE I SURE DID.
     public int currentHP{get; set;}
 
     public Stat HP {get;}
@@ -31,7 +31,7 @@ public class Monster
         type1 = t1;
         type2 = (t2 == null? Type.NONE : t2); //if the secondary type was specified as null, it is changed to the NONE default type.
         HP = new Stat(hp);
-        currentHP = (int) Mathf.Round(hp * 1.5f); //MAX HP is always the base stat * 1.5. it is the only type where this happens.
+        currentHP = (int) Mathf.Round(hp * 1.5f); //MAX HP is always the base stat * 1.5. it is the only stat where this happens.
         maxHP = currentHP;
         ATK = new Stat(atk);
         DEF = new Stat(def);
@@ -48,9 +48,9 @@ public class Monster
     public Monster(Monster mon){ //this constructor makes it possible to "clone" the static monsters from the monster list into non-static instances. This is very important for gameplay.
         name = mon.name;
         type1 = mon.type1;
-        type2 = mon.type2; //if the secondary type was specified as null, it is changed to the NONE default type.
+        type2 = mon.type2;
         HP = mon.HP;
-        currentHP = mon.currentHP; //MAX HP is always the base stat * 1.5. it is the only type where this happens.
+        currentHP = mon.currentHP; 
         maxHP = mon.maxHP;
         ATK = mon.ATK;
         DEF = mon.DEF;
@@ -61,7 +61,7 @@ public class Monster
         move2 = mon.move2;
         move3 = mon.move3;
         move4 = mon.move4;
-        model = mon.model; //this should be a Prefab put in the Resources folder, loaded by Resources.Load(). See the MonsterMoveList file
+        model = mon.model;
     }
 
 

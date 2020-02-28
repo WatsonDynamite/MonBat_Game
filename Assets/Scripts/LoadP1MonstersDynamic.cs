@@ -48,29 +48,33 @@ public class LoadP1MonstersDynamic : MonoBehaviour
         int ind = 0;
         foreach (GameObject button in btnListAux)
         {
-            
-            button.GetComponentInChildren<Text>().text = party[ind].name;
-            var indAux = ind;
-            button.GetComponentInChildren<Button>().onClick.AddListener(delegate {turnQueuer(new TurnAction(party[indAux]));});
+            if (party[ind] != null)
+            {
+                button.GetComponentInChildren<Text>().text = party[ind].name;
+                var indAux = ind;
+                button.GetComponentInChildren<Button>().onClick.AddListener(delegate { turnQueuer(new TurnAction(party[indAux])); });
 
-            if (party[ind].HP.value == 0 || party[ind] == combatController.player1Monster)
-            {
-                button.GetComponentInChildren<Button>().interactable = false;
-                if (party[ind].HP.value == 0)
+                if (party[ind].currentHP == 0 || party[ind] == combatController.player1Monster)
                 {
-                    button.GetComponentInChildren<Text>().text += "[FNT]";
+                    button.GetComponentInChildren<Button>().interactable = false;
+                    if (party[ind].currentHP == 0)
+                    {
+                        button.GetComponentInChildren<Text>().text += "[FNT]";
+                    }
                 }
-            }else{
-                button.GetComponentInChildren<Button>().interactable = true;
-            }
-            if(party[ind].type1 == MonsterList.monsterNone.type1) //type1 should never be null so this is a safe comparison
-            {
-                button.SetActive(false);
-            }else{
-                button.SetActive(true);
-            }
-            
-            
+                else
+                {
+                    button.GetComponentInChildren<Button>().interactable = true;
+                }
+                if (party[ind].type1 == MonsterList.monsterNone.type1) //type1 should never be null so this is a safe comparison
+                {
+                    button.SetActive(false);
+                }
+                else
+                {
+                    button.SetActive(true);
+                }
+            } else { button.SetActive(false); }
 
             ind++;
         }
@@ -78,15 +82,27 @@ public class LoadP1MonstersDynamic : MonoBehaviour
     }
 
     private void turnQueuer(TurnAction playerAction)
-    { //this gets both moves from each monster and begins the turn
-        Debug.Log("Action selected: Switch");
-        Debug.Log("Monster selected: " + playerAction.monster.name);
-        List<Move> enemyMoveList = combatController.getP2Moves();
-        Move enemyMove = enemyMoveList[Random.Range(0, enemyMoveList.Count - 1)];
-        Debug.Log("Enemy move: " + enemyMove.name);
-        StartCoroutine(combatController.ExecuteTurn(playerAction, new TurnAction(enemyMove)));
-        ToggleMonsterList();
+    {
+        //check if the player is swapping an existing monster or sending out a new one
+        if(combatController.player1Monster == null)
+        {
+            LoadMonstersIntoUI();
+            Debug.Log("Swapping after a faint");
+            StartCoroutine(combatController.SummonNewMon(playerAction.monster, 1));
 
+        }
+        else
+        {
+            //this gets both moves from each monster and begins the turn
+            Debug.Log("Action selected: Switch");
+            Debug.Log("Monster selected: " + playerAction.monster.name);
+            List<Move> enemyMoveList = combatController.getP2Moves();
+            Move enemyMove = enemyMoveList[Random.Range(0, enemyMoveList.Count - 1)];
+            Debug.Log("Enemy move: " + enemyMove.name);
+            StartCoroutine(combatController.ExecuteTurn(playerAction, new TurnAction(enemyMove)));
+           
+        }
+        ToggleMonsterList();
     }
 
     // Update is called once per frame

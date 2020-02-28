@@ -31,6 +31,8 @@ public class CombatController : MonoBehaviour {
     public GameObject P2HPText;
     public GameObject P2HPMeter;
     public GameObject moveNamePlate;
+    public GameObject MonstersLeftP1;
+    public GameObject MonstersLeftP2;
 
     [Header ("Log Text")]
     public GameObject logText;
@@ -46,6 +48,9 @@ public class CombatController : MonoBehaviour {
     public GameObject defDownIndP2;
     public GameObject speedUpIndP1;
     public GameObject speedUpIndP2;
+
+    [Header("Monster Selection buttons")]
+    public GameObject monsterList;
 
     public bool isTurnInProgress;
     public bool reloadUI = false;
@@ -63,8 +68,8 @@ public class CombatController : MonoBehaviour {
         //THIS CAUSES A TON OF PROBLEMS WHEN THERE ARE DUPLICATE MONSTERS AS THE STAT CHANGES WILL WORK ON THE STATIC "TEMPLATE" AND NOT IN SEPARATE INSTANCES
         //ALWAYS INSTANTIATE NEW COPIES OF THE MONSTER FROM THE MONSTERLIST CLASS TO USE THEM IN GAMEPLAY!!!!!
 
-        player1Party = new List<Monster>() { new Monster(MonsterList.testMon1), new Monster(MonsterList.testMon2), new Monster(MonsterList.monsterNone), new Monster(MonsterList.monsterNone), new Monster(MonsterList.monsterNone), new Monster(MonsterList.monsterNone)};
-        player2Party = new List<Monster>() { new Monster(MonsterList.testMon2), new Monster(MonsterList.testMon1), new Monster(MonsterList.monsterNone), new Monster(MonsterList.monsterNone), new Monster(MonsterList.monsterNone), new Monster(MonsterList.monsterNone)};
+        player1Party = new List<Monster>() { new Monster(MonsterList.testMon1), new Monster(MonsterList.testMon2), null, null, null, null};
+        player2Party = new List<Monster>() { new Monster(MonsterList.testMon2), new Monster(MonsterList.testMon1), null, null, null, null};
 
         player1Monster = player1Party[0];
         player2Monster = player2Party[0];
@@ -92,6 +97,10 @@ public class CombatController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () { }
+
+
+
+    //MAIN COMBAT FUNCTIONS
 
     public IEnumerator ExecuteTurn (TurnAction player1Action, TurnAction player2Action) {
         Debug.Log("Starting turn");
@@ -166,7 +175,7 @@ public class CombatController : MonoBehaviour {
         isTurnInProgress = true;
         foreach (var item in seq) {
             yield return item;
-            if(player1Monster.HP.value == 0 || player2Monster.HP.value == 0){
+            if(player1Monster == null || player2Monster == null){
                 Debug.Log("Someone died");
                 yield break;
             }
@@ -206,7 +215,7 @@ public class CombatController : MonoBehaviour {
             Destroy(player1MonsterInstance);
             player1Monster = newMon;
             player1MonsterInstance = Instantiate (player1Monster.model as GameObject, player1Spawn.transform.position, player1Spawn.transform.rotation);
-            Debug.Log("Switched to: " + player1Monster.name);
+           
         }else{
             player2Monster = null;
             player2Monster = newMon;
@@ -218,6 +227,55 @@ public class CombatController : MonoBehaviour {
         camr.SetActive(false);
         reloadUI = false;
         cameraController.SetActive(true);
+    }
+
+    public IEnumerator SummonNewMon(Monster newMon, int player) //after current mon faints
+    {
+        Debug.Log("Doing Summoning!");
+        reloadUI = true;
+        GameObject camr = P1Cam;
+        SwitchAnim SwitchAnimDel = new SwitchAnim(PlayBuffAnimP1);
+        float animationTime = 1f;
+        switch (player)
+        {
+            case 1:
+                //we're doing player 1
+                camr = P1Cam;
+                SwitchAnimDel = new SwitchAnim(PlayBuffAnimP1);
+                WriteToLog("Player 1 has sent out " + newMon.name);
+                break;
+            case 2:
+                //we're doing player 2
+                camr = P1Cam;
+                SwitchAnimDel = new SwitchAnim(PlayBuffAnimP2);
+                WriteToLog("Player 2 has sent out " + newMon.name);
+                break;
+        }
+
+        cameraController.SetActive(false);
+        camr.SetActive(true);
+
+        switch(player)
+        {
+            case 1:
+                player1Monster = newMon;
+                player1MonsterInstance = Instantiate(player1Monster.model as GameObject, player1Spawn.transform.position, player1Spawn.transform.rotation);
+                break;
+
+            case 2:
+                player2Monster = newMon;
+                player2MonsterInstance = Instantiate(player1Monster.model as GameObject, player1Spawn.transform.position, player1Spawn.transform.rotation);
+                break;
+        }
+
+        yield return SwitchAnimDel();
+        LoadHPPlates();
+        yield return new WaitForSeconds(animationTime);
+
+        camr.SetActive(false);
+        reloadUI = false;
+        cameraController.SetActive(true);
+        isTurnInProgress = false;
     }
 
     public IEnumerator DoMoves (Move move, Monster attacker, Monster defender) {
@@ -286,6 +344,8 @@ public class CombatController : MonoBehaviour {
                 
                 break;
         }
+        
+
 
         if (defender.currentHP <= 0) {
             yield return FaintAnimDel2nd ();
@@ -293,8 +353,10 @@ public class CombatController : MonoBehaviour {
             yield break;
         }
 
+       
+
         if(move.secondaryEffects != null){
-        foreach (SecondaryEffect se in move.secondaryEffects) {
+            foreach (SecondaryEffect se in move.secondaryEffects) {
                     if (se != null) {
                         var affectsOthers = false;
                         if (se.type == SecondaryEffectType.OTHER) {
@@ -307,58 +369,8 @@ public class CombatController : MonoBehaviour {
                             yield return ApplyEffect (se, attacker);
                         }
                     }
+            }
         }
-        }
-
-
-        /* 
-        if (defender.type1 == secondMove.type || defender.type2 == secondMove.type) {
-            //is stab
-            isSTAB = true;
-        } else {
-            isSTAB = false;
-        }
-
-        
-        //SECOND ATTACKS FIRST
-        switch (secondMove.cat) {
-            case Category.PHYSICAL:
-                var dmg3 = (int) Mathf.Floor (((secondMove.power) * (isSTAB ? 1.5f : 1f)) * (defender.ATK.getTrueValue() / attacker.DEF.getTrueValue()) * 0.3f * (TypeUtils.Effectiveness (secondMove.type, attacker.type1) * TypeUtils.Effectiveness (secondMove.type, attacker.type2)));
-                attacker.receiveDamage (dmg3);
-                Debug.Log ("Second attacks attacker: " + dmg3);
-                yield return AtkAnimDel2nd (secondMove);
-                break;
-
-            case Category.SPECIAL:
-                attacker.receiveDamage ((int) Mathf.Floor (((secondMove.power) * (isSTAB ? 1.5f : 1f)) * (defender.spATK.getTrueValue() / attacker.spDEF.getTrueValue()) * 0.3f * (TypeUtils.Effectiveness (secondMove.type, attacker.type1) * TypeUtils.Effectiveness (secondMove.type, attacker.type2))));
-                yield return AtkAnimDel2nd (secondMove);
-                break;
-
-            case Category.STATUS:
-                foreach (SecondaryEffect se in secondMove.secondaryEffects) {
-                var affectsOthers = false;
-                if (se.type == SecondaryEffectType.OTHER) {
-                    affectsOthers = true;
-                }
-                if (affectsOthers) {
-                        yield return BuffAnimDel2nd (secondMove);
-                        yield return ApplyEffect (se, attacker);
-                } else {
-                        yield return BuffAnimDel2nd (secondMove);
-                        yield return ApplyEffect (se, defender);
-                 }
-                }
-
-                break;
-
-        }
-
-        if (attacker.currentHP <= 0) {
-            yield return FaintAnimDel1st ();
-
-            yield break; //turn is over
-        }
-        */
 
         }
     }
@@ -425,6 +437,20 @@ public class CombatController : MonoBehaviour {
         yield return new WaitForSeconds (0);
     }
 
+    
+
+    public IEnumerator ShowNewMonsterSelector() //shows the UI for when the player loses a monster and needs to select a new one
+    {
+        isTurnInProgress = true;
+
+        monsterList.SetActive(true);
+
+        yield return new WaitForSeconds(0);
+
+    }
+
+
+
     //WRITE TO LOG
 
     public void WriteToLog (string str) {
@@ -435,10 +461,54 @@ public class CombatController : MonoBehaviour {
     //REFRESH UI ELEMENTS
 
     public void LoadHPPlates(){
+
+        LoadMonsterScoreBoards();
+        
         P1HPText.GetComponent<Text> ().text = player1Monster.currentHP.ToString () + " / " + player1Monster.maxHP.ToString ();
+        StartCoroutine( HPBarInstantSetAnim (P1HPMeter, (float) player1Monster.currentHP / (float) player1Monster.maxHP));
         P2HPText.GetComponent<Text> ().text = player2Monster.currentHP.ToString () + " / " + player2Monster.maxHP.ToString ();
+        StartCoroutine( HPBarInstantSetAnim (P2HPMeter, (float)player2Monster.currentHP / (float)player2Monster.maxHP));
         P1MonsterName.GetComponent<Text> ().text = player1Monster.name;
         P2MonsterName.GetComponent<Text> ().text = player2Monster.name;
+    }
+
+    public void LoadMonsterScoreBoards()
+    {
+        MonstersLeftP1.GetComponent<Text>().text = GetRemainingMonstersParty(1).ToString();
+        MonstersLeftP2.GetComponent<Text>().text = GetRemainingMonstersParty(2).ToString();
+    }
+
+    public int GetRemainingMonstersParty(int player)
+    {
+        int val = 0;
+        switch (player)
+        {
+            case 1:
+                foreach(Monster mon in player1Party)
+                {
+                    if(mon != null) {
+                        if(mon.currentHP != 0)
+                        {
+                            val++;
+                        }
+                    }
+                }
+
+                break;
+            case 2:
+                foreach (Monster mon in player2Party)
+                {
+                    if (mon != null)
+                    {
+                        if (mon.currentHP != 0)
+                        {
+                            val++;
+                        }
+                    }
+                }
+                break;
+        }
+        return val;
     }
 
     //ATK ANIMS
@@ -504,7 +574,13 @@ public class CombatController : MonoBehaviour {
         yield return new WaitForSeconds (1);
         Destroy (player1MonsterInstance);
         player1Monster = null;
+        //present monster GUI
+        LoadMonsterScoreBoards();
+        yield return ShowNewMonsterSelector();
+
+
     }
+
 
     public IEnumerator PlayFaintAnimP2 () {
         cameraController.SetActive (false);
@@ -515,12 +591,13 @@ public class CombatController : MonoBehaviour {
         yield return new WaitForSeconds (1);
         Destroy (player2MonsterInstance);
         player2Monster = null;
+        LoadMonsterScoreBoards();
+
     }
 
     //ANIMS FOR CASTING STATUS MOVES
 
     public IEnumerator PlayStatusAnimP1 (Move move) {
-        Debug.Log ("PlayStatusAnimP1");
         cameraController.SetActive (false);
         P1Cam.SetActive (true);
         moveNamePlate.GetComponentInChildren<Text> ().text = move.name;
@@ -535,7 +612,6 @@ public class CombatController : MonoBehaviour {
     }
 
     public IEnumerator PlayStatusAnimP2 (Move move) {
-        Debug.Log ("PlayStatusAnimP2");
         cameraController.SetActive (false);
         P2Cam.SetActive (true);
         moveNamePlate.GetComponentInChildren<Text> ().text = move.name;
@@ -553,7 +629,6 @@ public class CombatController : MonoBehaviour {
     //ANIMS FOR RECEIVING DEBUFFS
 
     public IEnumerator PlayDebuffAnimP1 () {
-        Debug.Log ("playDebuffAnimP1");
         cameraController.SetActive (false);
         P1Cam.SetActive (true);
         if ((player1MonsterInstance).GetComponent<Animator> () != null) {
@@ -565,7 +640,6 @@ public class CombatController : MonoBehaviour {
     }
 
     public IEnumerator PlayDebuffAnimP2 () {
-        Debug.Log ("playDebuffAnimP2");
         cameraController.SetActive (false);
         P2Cam.SetActive (true);
         if ((player2MonsterInstance).GetComponent<Animator> () != null) {
@@ -579,7 +653,6 @@ public class CombatController : MonoBehaviour {
     //ANIMS FOR RECEIVING BUFFS
 
     public IEnumerator PlayBuffAnimP1 () {
-        Debug.Log ("playBuffAnimP1");
         cameraController.SetActive (false);
         P1Cam.SetActive (true);
         if ((player1MonsterInstance).GetComponent<Animator> () != null) {
@@ -591,7 +664,6 @@ public class CombatController : MonoBehaviour {
     }
 
     public IEnumerator PlayBuffAnimP2 () {
-        Debug.Log ("playBuffAnimP2");
         cameraController.SetActive (false);
         P2Cam.SetActive (true);
         if ((player2MonsterInstance).GetComponent<Animator> () != null) {
@@ -605,7 +677,6 @@ public class CombatController : MonoBehaviour {
 
     IEnumerator HPBarDepleteAnim (GameObject img, float targetWidth) {
         yield return new WaitForSeconds (0.1f);
-        Debug.Log ("Target Width: " + targetWidth);
         float aux = img.GetComponent<Image> ().rectTransform.localScale.x;
 
         while (img.GetComponent<Image> ().rectTransform.localScale.x > targetWidth) {
@@ -623,8 +694,27 @@ public class CombatController : MonoBehaviour {
         yield return new WaitForSeconds (1);
     }
 
+    IEnumerator HPBarInstantSetAnim(GameObject img, float targetWidth)
+    {
+        img.GetComponent<Image>().rectTransform.localScale = new Vector3(targetWidth, 1, 1);
+        if (img.GetComponent<Image>().rectTransform.localScale.x > 0.5f)
+        {
+            img.GetComponent<Image>().color = new Color32(42, 134, 46, 255);
+        }
+        else if (img.GetComponent<Image>().rectTransform.localScale.x > 0.2f)
+        {
+            img.GetComponent<Image>().color = new Color32(252, 232, 0, 255);
+        }
+        else
+        {
+            img.GetComponent<Image>().color = new Color32(255, 0, 0, 255);
+        }
+
+        yield return new WaitForSeconds(1);
+    }
+
+
     IEnumerator HPBarFillAnim (GameObject img, float targetWidth) {
-        Debug.Log ("Target Width: " + targetWidth);
         float aux = img.GetComponent<Image> ().rectTransform.localScale.x;
         while (img.GetComponent<Image> ().rectTransform.localScale.x < targetWidth) {
             img.GetComponent<Image> ().rectTransform.localScale = new Vector3 (aux += 0.08f, 1, 1);
@@ -633,7 +723,6 @@ public class CombatController : MonoBehaviour {
                 img.GetComponent<Image> ().color = new Color32 (252, 232, 0, 255);
             }
             if (img.GetComponent<Image> ().rectTransform.localScale.x > 0.5f) {
-                Debug.Log ("Over Half");
                 img.GetComponent<Image> ().color = new Color32 (42, 134, 46, 255);
             }
         }
