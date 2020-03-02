@@ -12,8 +12,8 @@ public static class MonsterList
 
         //Monster construction: Name, Type 1, Type 2, HP, ATK, DEF, SP.ATK, SP.DEF, SPEED, Move 1, Move 2, Move 3, Move 4, Resources.Load<GameObject>("[Path to prefab]")
         monsterNone = new Monster("None", Type.NONE, Type.NONE, 0, 0, 0, 0, 0, 0, MoveList.moveNone, MoveList.moveNone, MoveList.moveNone, MoveList.moveNone, null); //this is for empty slots in parties and should never be visible to the player in normal gameplay
-        testMon1 = new Monster("TestMonster1", Type.FIRE, Type.NONE, 100, 100, 100, 100, 100, 100, MoveList.prod, MoveList.recover, MoveList.sabotage, MoveList.intimidate, Resources.Load<GameObject>("Boximon_Fire/Boximon Fiery"));
-        testMon2 = new Monster("TestMonster2", Type.WATER, Type.NONE, 100, 100, 100, 100, 100, 105, MoveList.delete, MoveList.delete, MoveList.delete, MoveList.delete, Resources.Load<GameObject>("Boximon_Water/Boximon Cyclopes"));
+        testMon1 = new Monster("TestMonster1", Type.FIRE, Type.NONE, 100, 100, 100, 100, 100, 100, MoveList.fireball, MoveList.prod, MoveList.recover, MoveList.intimidate, Resources.Load<GameObject>("Boximon_Fire/Boximon Fiery"));
+        testMon2 = new Monster("TestMonster2", Type.WATER, Type.NONE, 100, 100, 100, 100, 100, 105, MoveList.shock, MoveList.rumble, MoveList.droplet, MoveList.sabotage, Resources.Load<GameObject>("Boximon_Water/Boximon Cyclopes"));
 
    }
 }
@@ -42,8 +42,8 @@ public static class MoveList
 
 
         fireball = new Move("Fireball", "The enemy is singed with a small fireball.", 50, 2, Type.FIRE, Category.PHYSICAL, null);
-        droplet = new Move("Droplet", "The enemy is soaked with a small droplet.", 180, 2, Type.WATER, Category.SPECIAL, null);
-        prod = new Move("Prod", "The enemy is prodded with a small branch.", 30, 2, Type.NATURE, Category.PHYSICAL, null);
+        droplet = new Move("Droplet", "The enemy is soaked with a small droplet.", 50, 2, Type.WATER, Category.SPECIAL, null);
+        prod = new Move("Prod", "The enemy is prodded with a small branch.", 50, 2, Type.NATURE, Category.PHYSICAL, null);
         rumble = new Move("Rumble", "The user makes the ground rumble slightly, tripping the opponent.", 50, 2, Type.EARTH, Category.PHYSICAL, null);
         shock = new Move("Shock", "The enemy is lightly shocked by electrity.", 50, 2, Type.ELECTRIC, Category.SPECIAL, null);
         recover = new Move("Recover", "The user bathes in light, healing 50% of its health.", 0, 2, Type.LIGHT, Category.STATUS, new SecondaryEffect[] {SecondaryEffectList.effectHeal});

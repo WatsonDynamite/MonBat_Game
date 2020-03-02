@@ -56,7 +56,10 @@ public class CombatController : MonoBehaviour {
     public bool reloadUI = false;
     
 
-    delegate IEnumerator AtkAnim (Move move);
+    private List<IEnumerator> seq;
+    private float damageCalcConstant = 0.6f;
+
+    delegate IEnumerator AtkAnim (Move move, int dmg);
     delegate IEnumerator FaintAnim ();
     delegate IEnumerator BuffAnim (Move move);
     delegate IEnumerator DebuffAnim (Move move);
@@ -68,8 +71,8 @@ public class CombatController : MonoBehaviour {
         //THIS CAUSES A TON OF PROBLEMS WHEN THERE ARE DUPLICATE MONSTERS AS THE STAT CHANGES WILL WORK ON THE STATIC "TEMPLATE" AND NOT IN SEPARATE INSTANCES
         //ALWAYS INSTANTIATE NEW COPIES OF THE MONSTER FROM THE MONSTERLIST CLASS TO USE THEM IN GAMEPLAY!!!!!
 
-        player1Party = new List<Monster>() { new Monster(MonsterList.testMon1), new Monster(MonsterList.testMon2), null, null, null, null};
-        player2Party = new List<Monster>() { new Monster(MonsterList.testMon2), new Monster(MonsterList.testMon1), null, null, null, null};
+        player1Party = new List<Monster>() { new Monster(MonsterList.testMon1), new Monster(MonsterList.testMon2), MonsterList.monsterNone, MonsterList.monsterNone, MonsterList.monsterNone, MonsterList.monsterNone};
+        player2Party = new List<Monster>() { new Monster(MonsterList.testMon2), new Monster(MonsterList.testMon1), MonsterList.monsterNone, MonsterList.monsterNone, MonsterList.monsterNone, MonsterList.monsterNone};
 
         player1Monster = player1Party[0];
         player2Monster = player2Party[0];
@@ -107,7 +110,7 @@ public class CombatController : MonoBehaviour {
         if (isTurnInProgress) {
             yield break;
         }
-        List<IEnumerator> seq = new List<IEnumerator> ();
+        seq = new List<IEnumerator> ();
         // determine turn order
         var speedDiff = player1Monster.SPEED.getTrueValue () - player2Monster.SPEED.getTrueValue ();
         //if positive, player 1 is attacker. If negative, player 2 is attacker. If 0, speed tie.
@@ -186,7 +189,7 @@ public class CombatController : MonoBehaviour {
 
     }
 
-    public IEnumerator SwapMon(Monster current, Monster newMon){
+    public IEnumerator SwapMon(Monster current, Monster newMon){ //this is for when you manually switch
         Debug.Log("Doing Switching!");
         reloadUI = true;
         GameObject camr = P1Cam;
@@ -246,7 +249,7 @@ public class CombatController : MonoBehaviour {
                 break;
             case 2:
                 //we're doing player 2
-                camr = P1Cam;
+                camr = P2Cam;
                 SwitchAnimDel = new SwitchAnim(PlayBuffAnimP2);
                 WriteToLog("Player 2 has sent out " + newMon.name);
                 break;
@@ -264,7 +267,7 @@ public class CombatController : MonoBehaviour {
 
             case 2:
                 player2Monster = newMon;
-                player2MonsterInstance = Instantiate(player1Monster.model as GameObject, player1Spawn.transform.position, player1Spawn.transform.rotation);
+                player2MonsterInstance = Instantiate(player2Monster.model as GameObject, player2Spawn.transform.position, player2Spawn.transform.rotation);
                 break;
         }
 
@@ -282,8 +285,11 @@ public class CombatController : MonoBehaviour {
         if(attacker != null){
         Debug.Log ("Doing Moves");
         WriteToLog (attacker.name + " used " + move.name + "!");
+        
         var isSTAB = false;
         var dmg = 0;
+        var effectiveness = (TypeUtils.Effectiveness (move.type, defender.type1) * TypeUtils.Effectiveness (move.type, defender.type2));
+        Debug.Log("Effectiveness: " + effectiveness);
         AtkAnim AtkAnimDel1st;
         FaintAnim FaintAnimDel1st;
         BuffAnim BuffAnimDel1st;
@@ -291,6 +297,16 @@ public class CombatController : MonoBehaviour {
         AtkAnim AtkAnimDel2nd;
         FaintAnim FaintAnimDel2nd;
         BuffAnim BuffAnimDel2nd;
+
+        if(move.cat != Category.STATUS){
+            switch(effectiveness){
+                case 4f: WriteToLog("Ultra effective!"); break;
+                case 2f: WriteToLog("Super effective!"); break;
+                case 0.5f: WriteToLog("Not very effective..."); break;
+                case 0.25f: WriteToLog("Ultra ineffective..."); break;
+                case 0f: WriteToLog("No effect!"); break;
+            }
+        }
 
         Debug.Log("Who's attacking? " + ReferenceEquals(attacker, player1Monster));
         if (ReferenceEquals(attacker, player1Monster)) {
@@ -323,18 +339,19 @@ public class CombatController : MonoBehaviour {
         //FIRST ATTACKS SECOND
         switch (move.cat) {
             case Category.PHYSICAL:
-                var dmg1 = (int) Mathf.Floor ((float) ((move.power) * (isSTAB ? 1.5f : 1f)) * (attacker.ATK.getTrueValue () / defender.DEF.getTrueValue ()) * 0.3f * (TypeUtils.Effectiveness (move.type, defender.type1) * TypeUtils.Effectiveness (move.type, defender.type2)));
+                
+                var dmg1 = (int) Mathf.Floor ((float) ((move.power) * (isSTAB ? 1.5f : 1f)) * (attacker.ATK.getTrueValue () / defender.DEF.getTrueValue ()) * damageCalcConstant * effectiveness);
                 
                 defender.receiveDamage (dmg1);
-                yield return AtkAnimDel1st (move);
+                yield return AtkAnimDel1st (move, dmg1);
                 break;
 
             case Category.SPECIAL:
-                var dmg2 = (int) Mathf.Floor ((float) ((move.power) * (isSTAB ? 1.5f : 1f)) * (attacker.spATK.getTrueValue () / defender.spDEF.getTrueValue ()) * 0.3f * (TypeUtils.Effectiveness (move.type, defender.type1) * TypeUtils.Effectiveness (move.type, defender.type2)));
+                var dmg2 = (int) Mathf.Floor ((float) ((move.power) * (isSTAB ? 1.5f : 1f)) * (attacker.spATK.getTrueValue () / defender.spDEF.getTrueValue ()) * damageCalcConstant * (TypeUtils.Effectiveness (move.type, defender.type1) * TypeUtils.Effectiveness (move.type, defender.type2)));
                 Debug.Log ("First attacks defender: " + dmg2);
                 defender.receiveDamage (dmg2);
                 //Debug.Log(move.secondaryEffects[0]);
-                yield return AtkAnimDel1st (move);
+                yield return AtkAnimDel1st (move, dmg2);
                 break;
 
             case Category.STATUS:
@@ -381,7 +398,7 @@ public class CombatController : MonoBehaviour {
             case SecondaryEffectType.SELF:
                 switch (effect.effect) {
                     case SecondaryEffectEffect.HEALING_HALF:
-                        WriteToLog (monster.name + " healed for " + (int) (monster.maxHP / 2f) + " HP!");
+                        WriteToLog (monster.name + " healed for " + ((int) monster.maxHP / 2f ).ToString() + " HP!");
                         monster.healDamage ((int) (monster.maxHP / 2f));
                         if (ReferenceEquals(monster,player1Monster)) {
                             StartCoroutine (HPBarFillAnim (P1HPMeter, (float) player1Monster.currentHP / (float) player1Monster.maxHP));
@@ -449,6 +466,21 @@ public class CombatController : MonoBehaviour {
 
     }
 
+    public IEnumerator ChangeNewPlayer2Monster(){
+        List<Monster> auxList = new List<Monster>();
+        //obtain every non-dead monster from the party
+        foreach(Monster mon in player2Party){
+                if(!(mon.Compare(MonsterList.monsterNone)) && mon.currentHP != 0){
+                    auxList.Add(mon);
+                }
+        }
+        System.Random ran = new System.Random();
+        Monster monAux = auxList[ran.Next(auxList.Count)];
+
+        yield return SummonNewMon(monAux, 2);
+
+    }
+
 
 
     //WRITE TO LOG
@@ -513,7 +545,7 @@ public class CombatController : MonoBehaviour {
 
     //ATK ANIMS
 
-    public IEnumerator PlayAtkAnimP1 (Move move) {
+    public IEnumerator PlayAtkAnimP1 (Move move, int dmg) {
         cameraController.SetActive (false);
         P1Cam.SetActive (true);
         moveNamePlate.GetComponentInChildren<Text> ().text = move.name;
@@ -528,7 +560,7 @@ public class CombatController : MonoBehaviour {
         if ((player2MonsterInstance).GetComponent<Animator> () != null) {
             (player2MonsterInstance).GetComponent<Animator> ().SetBool ("Take Damage", true);
             StartCoroutine (HPBarDepleteAnim (P2HPMeter, (float) player2Monster.currentHP / (float) player2Monster.maxHP));
-            WriteToLog ("\t" + (player2Monster.maxHP - player2Monster.currentHP) + " damage!");
+            WriteToLog ("\t" + dmg.ToString() + " damage!");
             P2HPText.GetComponent<Text> ().text = player2Monster.currentHP.ToString () + " / " + player2Monster.maxHP.ToString ();
             yield return new WaitForSeconds(0.4f);
             StartCoroutine (AnimationStateRestore (player2MonsterInstance));
@@ -538,7 +570,7 @@ public class CombatController : MonoBehaviour {
         StartCoroutine (CameraStateRestore ());
     }
 
-    public IEnumerator PlayAtkAnimP2 (Move move) {
+    public IEnumerator PlayAtkAnimP2 (Move move, int dmg) {
         cameraController.SetActive (false);
         P2Cam.SetActive (true);
         moveNamePlate.GetComponentInChildren<Text> ().text = move.name;
@@ -553,7 +585,7 @@ public class CombatController : MonoBehaviour {
         if ((player1MonsterInstance).GetComponent<Animator> () != null) {
             (player1MonsterInstance).GetComponent<Animator> ().SetBool ("Take Damage", true);
             StartCoroutine (HPBarDepleteAnim (P1HPMeter, (float) player1Monster.currentHP / (float) player1Monster.maxHP));
-            WriteToLog ("\t" + (player1Monster.maxHP - player1Monster.currentHP) + " damage!");
+            WriteToLog ("\t" + dmg + " damage!");
             P1HPText.GetComponent<Text> ().text = player1Monster.currentHP.ToString () + " / " + player1Monster.maxHP.ToString ();
             yield return new WaitForSeconds(0.4f);
             StartCoroutine (AnimationStateRestore (player1MonsterInstance));
@@ -592,6 +624,7 @@ public class CombatController : MonoBehaviour {
         Destroy (player2MonsterInstance);
         player2Monster = null;
         LoadMonsterScoreBoards();
+        yield return ChangeNewPlayer2Monster();
 
     }
 

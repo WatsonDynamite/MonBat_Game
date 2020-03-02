@@ -87,5 +87,10 @@ public class Monster
         moves.Add(move4);
         return moves;
     }
+
+    //compares 2 monsters, returns true if they are identical
+    public bool Compare(Monster mon){
+        return(type1 == mon.type1 && type2 == mon.type2 && HP == mon.HP && ATK == mon.ATK && DEF == mon.DEF && spATK == mon.spATK && spDEF == mon.spDEF && SPEED == mon.SPEED && move1 == mon.move1 && move2 == mon.move2 && move3 == mon.move3 && move4 == mon.move4 && model == mon.model);
+    }
 }
 
