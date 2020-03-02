@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class LoadP1MovesDynamic : MonoBehaviour
 {
-    public CombatController combatController;
+    public combatController combatController;
 
     //UI BUTTONS
      [Header("UI Buttons")]
