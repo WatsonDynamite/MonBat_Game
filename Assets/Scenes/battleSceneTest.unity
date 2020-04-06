@@ -230,7 +230,7 @@ MonoBehaviour:
   P2MonsterName: {fileID: 1552699954}
   P1HPText: {fileID: 280333196}
   P1HPMeter: {fileID: 768296989}
-  P2HPText: {fileID: 592011052}
+  P2HPText: {fileID: 1552699954}
   P2HPMeter: {fileID: 1614247761}
   moveNamePlate: {fileID: 1120259755}
   MonstersLeftP1: {fileID: 618712359}
@@ -2628,7 +2628,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1406919468}
   m_HandleRect: {fileID: 1406919467}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

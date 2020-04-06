@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CombatController : MonoBehaviour {
+public class combatController : MonoBehaviour {
 
     int turnCounter;
 
@@ -175,6 +175,8 @@ public class CombatController : MonoBehaviour {
             } 
         }
 
+        seq.Add( PerformStatusEffects() );
+
         isTurnInProgress = true;
         foreach (var item in seq) {
             yield return item;
@@ -281,7 +283,7 @@ public class CombatController : MonoBehaviour {
         isTurnInProgress = false;
     }
 
-    public IEnumerator DoMoves (Move move, Monster attacker, Monster defender) {
+    public IEnumerator DoMoves (Move move, Monster attacker, Monster defender) { //execute turn if both monsters are attacking
         if(attacker != null){
         Debug.Log ("Doing Moves");
         WriteToLog (attacker.name + " used " + move.name + "!");

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class MouseOverMonsterTooltip : MonoBehaviour
 {   
-    public CombatController combatController;
+    public combatController combatController;
     [Header("Tooltip Objects")]
     public GameObject monster1ToolTip;
     public GameObject monster2ToolTip;

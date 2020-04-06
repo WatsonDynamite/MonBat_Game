@@ -25,6 +25,7 @@ public class Monster
     public Move move4 {get;}
 
     public Object model {get;}
+    public StatusEffect statusEffect;
 
     public Monster(string n, Type t1, Type t2, int hp, int atk, int def, int spatk, int spdef, int spd, Move m1, Move m2, Move m3, Move m4, Object mod){
         name = n;
@@ -43,6 +44,7 @@ public class Monster
         move3 = m3;
         move4 = m4;
         model = mod; //this should be a Prefab put in the Resources folder, loaded by Resources.Load(). See the MonsterMoveList file
+        statusEffect = null;
     }
 
     public Monster(Monster mon){ //this constructor makes it possible to "clone" the static monsters from the monster list into non-static instances. This is very important for gameplay.
@@ -62,6 +64,7 @@ public class Monster
         move3 = mon.move3;
         move4 = mon.move4;
         model = mon.model;
+        statusEffect = null;
     }
 
 

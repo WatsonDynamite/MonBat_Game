@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class LoadP1MonstersDynamic : MonoBehaviour
 {
-    public CombatController combatController;
+    public combatController combatController;
 
     //UI BUTTONS
     [Header("UI Buttons")]
