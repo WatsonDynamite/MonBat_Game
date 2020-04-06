@@ -31,7 +31,7 @@ public class TypeUtils
 //I wish VSCode had colored comments...
    private static Sprite[] typesprites = Resources.LoadAll<Sprite>("UISprites/typesymbs"); 
 
-   private static float[,] typeChart = new float[15, 15] {
+   private static float[,] typeChart = new float[15, 15] { //vertical is attacker, horizontal is defender
 /*NONE*/{/*NON*/1,  /*WTR*/1,   /*FIR*/1,   /*NTR*/1,   /*ICE*/1,   /*ELC*/1,   /*TOX*/1,   /*SHD*/1,   /*MND*/1,   /*LGT*/1,   /*MRT*/1,   /*ERT*/1,   /*MTL*/1,   /*WND*/1,   /*ARC*/1},
 /*WATR*/{/*NON*/1,  /*WTR*/0.5f,/*FIR*/2,   /*NTR*/0.5f,/*ICE*/0.5f,/*ELC*/2,   /*TOX*/2,   /*SHD*/1,   /*MND*/1,   /*LGT*/1,   /*MRT*/1,   /*ERT*/2,   /*MTL*/1,   /*WND*/1,   /*ARC*/1},
 /*FIRE*/{/*NON*/1,  /*WTR*/0.5f,/*FIR*/0.5f,/*NTR*/2,   /*ICE*/2,   /*ELC*/1,   /*TOX*/2,   /*SHD*/1,   /*MND*/1,   /*LGT*/1,   /*MRT*/1,   /*ERT*/1,   /*MTL*/2,   /*WND*/1,   /*ARC*/1},
