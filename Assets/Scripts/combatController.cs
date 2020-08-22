@@ -31,7 +31,7 @@ public class combatController : MonoBehaviour {
         public Monster player1Monster; //player 1's current active monster
         public Monster player2Monster; //you know the drill
 
-        //this is the model that is loaded on the scene
+        //these are the models that are loaded on the scene
         private GameObject player1MonsterInstance;
         private GameObject player2MonsterInstance;
 
@@ -80,6 +80,7 @@ public class combatController : MonoBehaviour {
 
         private List<IEnumerator> seq; //this is the sequence of animations and actions for a given turn. This needs to be constructed and then executed
         private float damageCalcConstant = 0.6f; //this is the constant for the damage formula.
+
 
         //these are the delegates for the different animations. Delegates are essentially variables that store functions. Very useful to avoid code repetitions.
         delegate IEnumerator AtkAnim (Move move, int dmg);
@@ -254,47 +255,58 @@ public class combatController : MonoBehaviour {
                 Debug.Log (current.name);
                 Debug.Log (newMon.name);
                 float animationTime = 1f;
+
+
+                //set up which monster we're switching
                 if (ReferenceEquals (current, player1Monster)) {
                     //we're doing player 1
                     camr = P1Cam;
-                    SwitchAnimDel = new SwitchAnim (PlayBuffAnimP1);
+                    SwitchAnimDel = new SwitchAnim (PlayBuffAnimP1);   //right now there's no switching out animations so I use the Buff animation
                     WriteToLog ("Player 1 has swapped to " + newMon.name);
                 } else {
                     //we're doing player 2
                     camr = P1Cam;
-                    SwitchAnimDel = new SwitchAnim (PlayBuffAnimP2);
+                    SwitchAnimDel = new SwitchAnim (PlayBuffAnimP2);  //right now there's no switching out animations so I use the Buff animation
                     WriteToLog ("Player 2 has swapped to " + newMon.name);
                 }
 
-                cameraController.SetActive (false);
-                camr.SetActive (true);
-                yield return SwitchAnimDel ();
+
+                //execute what we've set up
+                cameraController.SetActive (false); //stops the automatic camera swaps
+                camr.SetActive (true); //changes the view to the static camera
+                yield return SwitchAnimDel (); //play animation
+
+                //this should be changed for the sake of no code repetition
+                //also, player 2 can't switch yet, so that "else" block is horribly incomplete.
                 if (ReferenceEquals (current, player1Monster)) {
                     player1Monster = null;
                     Destroy (player1MonsterInstance);
                     player1Monster = newMon;
                     player1MonsterInstance = Instantiate (player1Monster.model as GameObject, player1Spawn.transform.position, player1Spawn.transform.rotation);
-
                 } else {
                     player2Monster = null;
                     player2Monster = newMon;
                 }
-                yield return SwitchAnimDel ();
-                LoadHPPlates ();
+
+               
+                yield return SwitchAnimDel ();  //plays the sending out animation (right now it's the same as the switch out animation)
+                LoadHPPlates (); //reloads the HP plates
                 yield return new WaitForSeconds (animationTime);
 
+                //resets cameras
                 camr.SetActive (false);
                 reloadUI = false;
                 cameraController.SetActive (true);
             }
 
-            public IEnumerator SummonNewMon (Monster newMon, int player) //after current mon faints
+            public IEnumerator SummonNewMon (Monster newMon, int player) //handles sending out a new monster after current mon faints
             {
                 Debug.Log ("Doing Summoning!");
                 reloadUI = true;
                 GameObject camr = P1Cam;
                 SwitchAnim SwitchAnimDel = new SwitchAnim (PlayBuffAnimP1);
                 float animationTime = 1f;
+
                 switch (player) {
                     case 1:
                         //we're doing player 1
