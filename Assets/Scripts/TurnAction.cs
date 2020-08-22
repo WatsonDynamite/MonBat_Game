@@ -1,4 +1,8 @@
-﻿using System.Collections;
+﻿//this defines the action that a player takes in a turn.
+//it's essentially an encapsulation for the 3 types of action a player can take on their turn.
+
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 

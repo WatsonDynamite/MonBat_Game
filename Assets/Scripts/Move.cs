@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿//this defines the structure of the moves that monsters use.
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,9 +12,9 @@ public class Move
     public string desc {get;}
     //how much stamina the move costs to cast
     public int cost {get;} 
-    //how much base power the move has (to be used in dmg calculations)
+    //how much base power the move has
     public int power {get;} 
-    //what type the move is (for STAB calculation, effectiveness, etc.)
+    //what type the move is
     public Type type {get;} 
     //Category: physical, special, status, see: Category class
     public Category cat {get;}
@@ -38,12 +40,13 @@ public enum Category //whether the move uses sp.atk to hit sp.def or uses atk to
 }
 
 
-public enum SecondaryEffectType  //whether the effect affects the user or someone else
+public enum SecondaryEffectType  //whether the secondary effect of the move applies to the user or the target
 {
     SELF,
     OTHER
 }
-public enum SecondaryEffectEffect //the name of the effect proper
+
+public enum SecondaryEffectEffect //the name of the effect proper. This doesn't actually -do- anything, the actual effect is applied on CombatController.
 {   
     //HEALING
     HEALING_HALF, //50% HP recovery
@@ -58,7 +61,9 @@ public enum SecondaryEffectEffect //the name of the effect proper
     LOWER_DEF_1, //-1 def
     LOWER_SP_ATK_1, //you get the idea...
     LOWER_SP_DEF_1,
-    LOWER_SPEED_1
+    LOWER_SPEED_1,
+    //STATUSES
+    POISON_FIVE //poisons for 5 turns
 }
 
 public class SecondaryEffect{ //secondary effects are a union of an effect (defense down, speed up, etc.) and the effect type (whether it affects the user or someone else)
@@ -79,14 +84,18 @@ public static class SecondaryEffectList{  //used for global access of every seco
     public static SecondaryEffect effectDefDown {get;}
     public static SecondaryEffect effectSpeedUp {get;}
 
+    public static SecondaryEffect poisonFive {get;}
+
     static SecondaryEffectList(){
         effectHeal = new SecondaryEffect(SecondaryEffectType.SELF, SecondaryEffectEffect.HEALING_HALF); //Heals self for 50%
         effectDefDown = new SecondaryEffect(SecondaryEffectType.OTHER, SecondaryEffectEffect.LOWER_DEF_1); //Lowers enemy's defense by 1 stage
         effectSpeedUp = new SecondaryEffect(SecondaryEffectType.SELF, SecondaryEffectEffect.BOOST_SPEED_1); //Boosts own speed by 1 stage
+        poisonFive = new SecondaryEffect(SecondaryEffectType.OTHER, SecondaryEffectEffect.POISON_FIVE); //Poisons enemy for 5 turns
     }
 }
 
-public class MoveExecutionAuxUnit{ //this is mostly used for doubles. Meant to be used when a move is invoked so that we can know who is the user, the move that was used, and the target of said move.
+public class MoveExecutionAuxUnit{ 
+    //this will mostly be used for an eventual implementation of doubles. Meant to be used when a move is invoked so that we can know who is the user, the move that was used, and the target of said move.
     public Monster user {get;}
     public Monster target {get;}
     public Move move {get;}

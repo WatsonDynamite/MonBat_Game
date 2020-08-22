@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿//this file defines all the types in the game that both monsters and moves have.
+
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Reflection;
 
 public enum Type
 {
-    NONE, //default type for empty secondary types / error handling, make sure there is no null in types)
+    NONE, //default type for empty secondary types / error handling, make sure NULL is never used for a type. Use this instead.)
     WATER,
     FIRE,
     NATURE,
@@ -28,7 +30,6 @@ public class TypeUtils
 //horizontal: attacking type
 //vertical: defending type
 //this is a mess to read, but I haven't found any other way. I'll eventually make this a chart for easy access.
-//I wish VSCode had colored comments...
    private static Sprite[] typesprites = Resources.LoadAll<Sprite>("UISprites/typesymbs"); 
 
    private static float[,] typeChart = new float[15, 15] { //vertical is attacker, horizontal is defender

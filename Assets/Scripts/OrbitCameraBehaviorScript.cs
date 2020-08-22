@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿//this is a really simple script to make the camera rotate around a pivot point like it does in the 3D Pokemon games.
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 

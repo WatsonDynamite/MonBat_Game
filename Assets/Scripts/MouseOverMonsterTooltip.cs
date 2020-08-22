@@ -1,4 +1,8 @@
-﻿using System.Collections;
+﻿//this script loads the tooltip that appears whenever you mouse over a monster's nameplate.
+//all this does is take the UI canvas object and fill it up with values and bars
+
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;

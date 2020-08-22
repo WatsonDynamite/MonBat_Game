@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿//this script creates a list of all the cameras. 
+//So long as this script is enabled, the viewport will switch between every camera on the list.
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,7 +26,8 @@ public class cameraController : MonoBehaviour
                                                             new KeyValuePair<GameObject, float>(faceZoom2Camera, 8),
                                                             new KeyValuePair<GameObject, float>(orbitMon1, 7),
                                                             new KeyValuePair<GameObject, float>(orbitMon2, 7)};
-       //new List<GameObject>{overShoulder, orbit, faceZoom1Camera,  splitScCamera, faceZoom2Camera, orbitMon1, orbitMon2};
+
+       //the key is the camera object, the value is the number of seconds the camera remains active before it switches.
 
        StartCoroutine(CameraStart());
     }
@@ -32,7 +36,9 @@ public class cameraController : MonoBehaviour
         
     }
 
-         public static List<KeyValuePair<GameObject, float>> Fisher_Yates_CardDeck_Shuffle (List<KeyValuePair<GameObject, float>>aList) {
+
+    //this is a cute shuffle function I sniffed out on StackOverflow. It shuffles the list of cameras.
+    public static List<KeyValuePair<GameObject, float>> Fisher_Yates_CardDeck_Shuffle (List<KeyValuePair<GameObject, float>>aList) {
  
          System.Random _random = new System.Random ();
  

@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿//this file essentially serves as the master database for every monster and move in the game.
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +14,7 @@ public static class MonsterList
 
         //Monster construction: Name, Type 1, Type 2, HP, ATK, DEF, SP.ATK, SP.DEF, SPEED, Move 1, Move 2, Move 3, Move 4, Resources.Load<GameObject>("[Path to prefab]")
         monsterNone = new Monster("None", Type.NONE, Type.NONE, 0, 0, 0, 0, 0, 0, MoveList.moveNone, MoveList.moveNone, MoveList.moveNone, MoveList.moveNone, null); //this is for empty slots in parties and should never be visible to the player in normal gameplay
-        testMon1 = new Monster("TestMonster1", Type.FIRE, Type.NONE, 100, 100, 100, 100, 100, 100, MoveList.fireball, MoveList.prod, MoveList.recover, MoveList.intimidate, Resources.Load<GameObject>("Boximon_Fire/Boximon Fiery"));
+        testMon1 = new Monster("TestMonster1", Type.FIRE, Type.NONE, 100, 100, 100, 100, 100, 100, MoveList.fireball, MoveList.prod, MoveList.recover, MoveList.envenomate, Resources.Load<GameObject>("Boximon_Fire/Boximon Fiery"));
         testMon2 = new Monster("TestMonster2", Type.WATER, Type.NONE, 100, 100, 100, 100, 100, 105, MoveList.shock, MoveList.rumble, MoveList.droplet, MoveList.sabotage, Resources.Load<GameObject>("Boximon_Water/Boximon Cyclopes"));
 
    }
@@ -31,6 +33,7 @@ public static class MoveList
     public static Move recover;
     public static Move intimidate;
     public static Move sabotage;
+    public static Move envenomate;
 
     static MoveList(){
         //move construction: name, power, cost, type, category, side effects
@@ -49,6 +52,8 @@ public static class MoveList
         recover = new Move("Recover", "The user bathes in light, healing 50% of its health.", 0, 2, Type.LIGHT, Category.STATUS, new SecondaryEffect[] {SecondaryEffectList.effectHeal});
         intimidate = new Move("Intimidate", "The user intimidates the opponent, lowering their Attack stat by one stage.", 0, 2, Type.SHADOW, Category.STATUS, new SecondaryEffect[]{SecondaryEffectList.effectDefDown});
         sabotage = new Move("Sabotage", "The user strikes the opponent, raising their own speed and lowering the enemy's defense.", 10, 2, Type.MARTIAL, Category.PHYSICAL, new SecondaryEffect[]{SecondaryEffectList.effectDefDown, SecondaryEffectList.effectSpeedUp});
+        envenomate = new Move("Envenomate", "The user poisons the opponent for 5 turns", 0, 2, Type.TOXIC, Category.STATUS, new SecondaryEffect[]{SecondaryEffectList.poisonFive});
+
        
     }    
 }

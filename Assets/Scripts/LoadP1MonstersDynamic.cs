@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿//this script populates the UI with the information from the player's party.
+//it also handles any UI events related to switching or sending out a new monster.
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,7 +46,6 @@ public class LoadP1MonstersDynamic : MonoBehaviour
         //in here we get the monsters from the player's party and make the buttons match them.
         //We add a listener to each button
         party = combatController.getP1Party();
-        //MonBtnList.SetActive(false);
        
         int ind = 0;
         foreach (GameObject button in btnListAux)
@@ -89,16 +91,19 @@ public class LoadP1MonstersDynamic : MonoBehaviour
             LoadMonstersIntoUI();
             Debug.Log("Swapping after a faint");
             StartCoroutine(combatController.SummonNewMon(playerAction.monster, 1));
-
         }
         else
         {
             //this gets both moves from each monster and begins the turn
             Debug.Log("Action selected: Switch");
             Debug.Log("Monster selected: " + playerAction.monster.name);
+            
+            //the next 3 lines of code are to be replaced whenever netcode is implemented.
             List<Move> enemyMoveList = combatController.getP2Moves();
             Move enemyMove = enemyMoveList[Random.Range(0, enemyMoveList.Count - 1)];
             Debug.Log("Enemy move: " + enemyMove.name);
+
+
             StartCoroutine(combatController.ExecuteTurn(playerAction, new TurnAction(enemyMove)));
            
         }
@@ -151,7 +156,8 @@ public class LoadP1MonstersDynamic : MonoBehaviour
         }
     }
 
-    /*
+    /* I think this code is in the LoadPIMovesDynamic file now.
+    -
     public void EnableMoveToolTip(GameObject btn)
     {
         Move move = MoveList.moveNone;

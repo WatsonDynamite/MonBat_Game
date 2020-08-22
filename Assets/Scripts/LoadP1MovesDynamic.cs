@@ -1,4 +1,10 @@
-﻿using System.Collections;
+﻿//this script fills up the buttons for the moves in the UI.
+//it also handles any UI events related to attacking
+//in this version, it also picks the enemy monster's move at random.
+//that's as much AI as I feel like making atm
+
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -68,6 +74,7 @@ public class LoadP1MovesDynamic : MonoBehaviour
         Debug.Log("Action selected: Move");
         Debug.Log("Move selected: " + playerAction.move.name);
         //player 2 (CPU) picks a move at random
+        //the following 3 lines are to be replaced whenever we get any netcode
         List<Move> enemyMoveList = combatController.getP2Moves();
         Move enemyMove = enemyMoveList[Random.Range(0, enemyMoveList.Count - 1)];
         Debug.Log("Enemy move: " + enemyMove.name);

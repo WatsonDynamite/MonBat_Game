@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿//this script controls the animation that the Buff and Debuff indicators perform.
+//not sure if this is done better as an -actual- animation, since I don't know how Unity handles transparency and canvas size in animations.
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 

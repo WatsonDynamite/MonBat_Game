@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿//this is the data structure of each of the stats of a monster.
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +9,7 @@ public class Stat {
     public int stage;       //buff stage
     public float statMod;   //value of modifier to apply
 
-    public Stat(int val){
+    public Stat(int val){  //generates stat
         value = val;
         statMod = 1;
         stage = 0;
@@ -18,7 +20,9 @@ public class Stat {
     }
 
 
-    public bool buffStat(){ //boosts a stat one stage. I may have to allow this to receive an int for the number of stages intended to boost.
+    public bool buffStat(){ 
+        //boosts a stat one stage. I may have to allow this to receive an int for the number of stages intended to boost.
+        //needless to say, you shouldn't use this for the HP stat.
         if(stage < 6){
             stage++;
             switch (stage){

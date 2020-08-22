@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿//spawns and despawns the buff and debuff sprites.
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
