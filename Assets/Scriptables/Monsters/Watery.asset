@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b7716f1313ac1a48a184a3317f6146a, type: 3}
+  m_Name: Watery
+  m_EditorClassIdentifier: 
+  name: Watery
+  type1: 1
+  type2: 0
+  HP: 100
+  ATK: 100
+  DEF: 100
+  spATK: 100
+  spDEF: 100
+  SPEED: 105
+  move1: {fileID: 11400000, guid: fe01bdc40ca68664a88881b77f1c7c8a, type: 2}
+  move2: {fileID: 11400000, guid: 34f375d49bf927e4f8ccb9e11269e453, type: 2}
+  move3: {fileID: 11400000, guid: 2806e95b67110bf449864aa28c9f173f, type: 2}
+  move4: {fileID: 11400000, guid: fc6677a6deff34f44901a9e81c85e63a, type: 2}
+  prefab: {fileID: 1111084942782338, guid: 84493eaa65d75074ca2c6e2d8a90ff9a, type: 3}
