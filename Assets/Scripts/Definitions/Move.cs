@@ -9,7 +9,7 @@ using UnityEngine;
 public class Move : ScriptableObject
 {
     //the name of a move
-    public new string name;
+    public string name;
     //the move's description
     public string desc;
     //how much stamina the move costs to cast
@@ -20,16 +20,19 @@ public class Move : ScriptableObject
     public Type type; 
     //Category: physical, special, status, see: Category class
     public Category cat;
+    //Priority: This shouldn't go lower than -4 or higher than 4 but there are no other constraints to it.
+    public int priority;
     //array of special secondary effects triggered by the move
     public SecondaryEffect[] secondaryEffects;
 
-    public Move(string nm, string dsc, int pow, int c,  Type t, Category ct, SecondaryEffect[] scFX){
+    public Move(string nm, string dsc, int pow, int c, int pri, Type t, Category ct, SecondaryEffect[] scFX){
             name = nm;
             desc = dsc;
             cost = c;
             power = pow;
             type = t;
             cat = ct;
+            priority = pri;
             secondaryEffects = scFX;
     }
 }
@@ -56,12 +59,14 @@ public static class SecondaryEffectList{  //used for global access of every seco
     public static SecondaryEffect effectDefDown {get;}
     public static SecondaryEffect effectSpeedUp {get;}
     public static SecondaryEffect poisonFive {get;}
+    public static SecondaryEffect burnFive {get;}
 
     static SecondaryEffectList(){
         effectHeal = new SecondaryEffect("SELF", "HEALING_HALF"); //Heals self for 50%
         effectDefDown = new SecondaryEffect("OTHER", "LOWER_DEF_1"); //Lowers enemy's defense by 1 stage
         effectSpeedUp = new SecondaryEffect("SELF", "BOOST_SPEED_1"); //Boosts own speed by 1 stage
         poisonFive = new SecondaryEffect("OTHER", "POISON_FIVE"); //Poisons enemy for 5 turns
+        burnFive = new SecondaryEffect("OTHER", "BURN_FIVE"); //Burns enemy for 5 turns
     }
 }
 

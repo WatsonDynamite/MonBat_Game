@@ -17,11 +17,18 @@ public class TurnAction
 {
     public ActionType actionType{get;}
     public Move move{get;}
-    public Monster monster{get;}
+    public Monster user{get;}
+    public Monster target{get;} 
+    public Monster switchMonster{get;}
+    public int priority{get;}
 
-    public TurnAction(Move mv){
+        //Turn action for performing a move. mv is the move to be used, user is the using monster and target is the opponent.
+    public TurnAction(Move mv, Monster usr, Monster trg){
             actionType = ActionType.MOVE;
             move = mv;
+            user = usr;
+            target = trg;
+            priority = mv.priority;
     }
 
     public TurnAction(ActionType at){
@@ -29,9 +36,11 @@ public class TurnAction
             move = MoveList.moveNone;
     }
 
-    public TurnAction(Monster mn){
+        //Turn action for switching. mn is the monster to switch to. user is the monster that's being switched out.
+    public TurnAction(Monster mn,  Monster user){
             actionType = ActionType.SWITCH;
             move = MoveList.moveNone;
-            monster = mn;
+            switchMonster = mn;
+            priority = int.MaxValue;
     }
 }

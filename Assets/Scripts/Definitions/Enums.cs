@@ -29,5 +29,14 @@ public enum SecondaryEffectEffect //the name of the effect proper. This doesn't 
     LOWER_SP_DEF_1,
     LOWER_SPEED_1,
     //STATUSES
-    POISON_FIVE //poisons for 5 turns
+    POISON_FIVE, //poisons for 5 turns
+    BURN_FIVE //burns for 5 turns
+}
+
+public enum AbilityFrequency
+{
+    SWITCH_IN, //ability triggers when monster switches in
+    ABILITY_USER_MOVE, //ability triggers when monster uses a move
+    ABILITY_TARGET_MOVE, //ability triggers when monster is hit by a move
+    ABILITY_PERIODIC, //ability triggers periodically
 }

@@ -36,25 +36,26 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Definitions\Move.cs" />
+     <Compile Include="Assets\Scripts\Definitions\Stat.cs" />
      <Compile Include="Assets\Scripts\Behaviours\OrbitCameraBehaviorScript.cs" />
      <Compile Include="Assets\Scripts\Behaviours\combatController.cs" />
-     <Compile Include="Assets\Scripts\Data\LoadP1MovesDynamic.cs" />
-     <Compile Include="Assets\Scripts\Data\StatModifier.cs" />
      <Compile Include="Assets\Scripts\Behaviours\cameraShake.cs" />
+     <Compile Include="Assets\Scripts\Definitions\Type.cs" />
      <Compile Include="Assets\Scripts\Behaviours\BuffDebuffSpriteController.cs" />
-     <Compile Include="Assets\Scripts\Data\StatusEffect.cs" />
-     <Compile Include="Assets\Scripts\Data\MonsterMoveList.cs" />
+     <Compile Include="Assets\Scripts\Definitions\MonsterTemplate.cs" />
      <Compile Include="Assets\Scripts\Behaviours\cameraController.cs" />
      <Compile Include="Assets\Scripts\Behaviours\BuffDebuffIndicatorScript.cs" />
-     <Compile Include="Assets\Scripts\Behaviours\MouseOverMonsterTooltip.cs" />
-     <Compile Include="Assets\Scripts\Data\LoadP1MonstersDynamic.cs" />
-     <Compile Include="Assets\Scripts\Data\TurnAction.cs" />
-     <Compile Include="Assets\Scripts\Data\Monster.cs" />
-     <Compile Include="Assets\Scripts\Definitions\Move.cs" />
      <Compile Include="Assets\Scripts\Definitions\Enums.cs" />
-     <Compile Include="Assets\Scripts\Definitions\Type.cs" />
-     <Compile Include="Assets\Scripts\Definitions\MonsterTemplate.cs" />
-     <Compile Include="Assets\Scripts\Definitions\Stat.cs" />
+     <Compile Include="Assets\Scripts\Behaviours\MouseOverMonsterTooltip.cs" />
+     <Compile Include="Assets\Scripts\Data\TurnAction.cs" />
+     <Compile Include="Assets\Scripts\Data\Monsters\Monster.cs" />
+     <Compile Include="Assets\Scripts\Data\Stats\StatModifier.cs" />
+     <Compile Include="Assets\Scripts\Data\Monsters\MonsterMoveList.cs" />
+     <Compile Include="Assets\Scripts\Data\Statuses\StatusEffect.cs" />
+     <Compile Include="Assets\Scripts\Data\Monsters\LoadP1MovesDynamic.cs" />
+     <Compile Include="Assets\Scripts\Data\Monsters\LoadP1MonstersDynamic.cs" />
+     <Compile Include="Assets\Scripts\Definitions\Ability.cs" />
     <Reference Include="UnityEngine">
         <HintPath>D:/Program Files/Unity/2020.2.1f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
@@ -640,6 +641,12 @@
     <Reference Include="Unity.Postprocessing.Runtime">
         <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.Postprocessing.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEditor.CacheServer">
+        <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/UnityEditor.CacheServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Addressables">
+        <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.Addressables.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
         <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
@@ -655,14 +662,26 @@
     <Reference Include="Unity.TextMeshPro">
         <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.ScriptableBuildPipeline">
+        <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.ScriptableBuildPipeline.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.2D.Sprite.Editor">
         <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Addressables.Editor">
+        <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.Addressables.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ResourceManager">
+        <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.ResourceManager.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Postprocessing.Editor">
         <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.Postprocessing.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
         <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ScriptableBuildPipeline.Editor">
+        <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.ScriptableBuildPipeline.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Rider.Editor">
         <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
@@ -672,24 +691,6 @@
     </Reference>
     <Reference Include="Unity.Recorder">
         <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.Recorder.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Addressables">
-        <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.Addressables.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Addressables.Editor">
-        <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.Addressables.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.CacheServer">
-        <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/UnityEditor.CacheServer.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.ResourceManager">
-        <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.ResourceManager.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.ScriptableBuildPipeline">
-        <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.ScriptableBuildPipeline.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.ScriptableBuildPipeline.Editor">
-        <HintPath>D:/GitHub/MonBat_Game/Library/ScriptAssemblies/Unity.ScriptableBuildPipeline.Editor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

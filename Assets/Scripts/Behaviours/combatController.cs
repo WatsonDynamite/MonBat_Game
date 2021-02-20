@@ -13,6 +13,7 @@
     I dread having to comment this.
 */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -70,6 +71,7 @@ public class combatController : MonoBehaviour {
         public GameObject defDownIndP2;
         public GameObject speedUpIndP1;
         public GameObject speedUpIndP2;
+
         public GameObject StatusEffectImageP1;
         public GameObject StatusEffectTurnCounterP1;
         
@@ -100,12 +102,7 @@ public class combatController : MonoBehaviour {
             player1Party =  new List<Monster>();
             player2Party = new List<Monster>();
 
-            GameObject fightButton = GameObject.Find("FightButton");
-            GameObject switchButton = GameObject.Find("SwitchButton");
-            LoadP1MovesDynamic moveScript = fightButton.GetComponentInChildren<LoadP1MovesDynamic>();
-            LoadP1MonstersDynamic monsterScript = switchButton.GetComponentInChildren<LoadP1MonstersDynamic>();
-
-            //TEMP: This list will later be loaded from a team file for P1 / the server for P2
+             //TEMP: This list will later be loaded from a team file for P1 / the server for P2
             string fieryAddr = "Assets/Scriptables/Monsters/Fiery.asset";
             string wateryAddr = "Assets/Scriptables/Monsters/Watery.asset";
             string[] p1 = {fieryAddr, wateryAddr, "", "", "", ""};
@@ -114,6 +111,10 @@ public class combatController : MonoBehaviour {
             yield return StartCoroutine(GeneratePlayer1Party(p1));
             yield return StartCoroutine(GeneratePlayer2Party(p2));
 
+            GameObject fightButton = GameObject.Find("FightButton");
+            GameObject switchButton = GameObject.Find("SwitchButton");
+            LoadP1MovesDynamic moveScript = fightButton.GetComponentInChildren<LoadP1MovesDynamic>();
+            LoadP1MonstersDynamic monsterScript = switchButton.GetComponentInChildren<LoadP1MonstersDynamic>();
             //fill UI
             moveScript.LoadMovesIntoUI();
             monsterScript.LoadMonstersIntoUI();
@@ -173,7 +174,6 @@ public class combatController : MonoBehaviour {
         //spawns an instance of a Monster based on the address of the corresponding Addressable ScriptableObject
         ///</summary>
         public IEnumerator GenerateMonster(string monAddr) {
-            Debug.Log(monAddr);
             AsyncOperationHandle<MonsterTemplate> handle = Addressables.LoadAssetAsync<MonsterTemplate>(monAddr);
             yield return handle;
             if(handle.Status == AsyncOperationStatus.Succeeded)
@@ -187,129 +187,119 @@ public class combatController : MonoBehaviour {
         //MAIN COMBAT FUNCTIONS
 
         public IEnumerator ExecuteTurn (TurnAction player1Action, TurnAction player2Action) {
-            Debug.Log ("Starting turn");
             if (isTurnInProgress) {
                 yield break; //stops any attempts to execute this function when a turn is already in progress
             }
             seq = new List<IEnumerator> ();
+
             // determine turn order
-            var speedDiff = player1Monster.SPEED.getTrueValue () - player2Monster.SPEED.getTrueValue ();
-            //if positive, player 1 is attacker. If negative, player 2 is attacker. If 0, speed tie.
+            TurnAction[] actionList = {player1Action, player2Action};
+            Array.Sort(actionList, delegate(TurnAction action1, TurnAction action2) {
+                //check priorities
+                if(action1.priority > action2.priority){
+                    return 1;
+                }
+                if(action1.priority < action2.priority){
+                    return -1;
+                }
+                //if priorities are equal, use speed
+                else {
+                    //if positive, player 1 is attacker. If negative, player 2 is attacker. If 0, speed tie.
+                    var speedDiff = action1.user.SPEED.getTrueValue() - action2.user.SPEED.getTrueValue();
+
+                    //currently, on a speed tie the turn order is picked at random. I will have to decide on something else later. I don't want it to be RNG.
+                    if (speedDiff == 0) {
+                        speedDiff = 1 * Mathf.Sign (UnityEngine.Random.Range (-1, 1));
+                    }
+                    return (int) speedDiff;
+                }
+            });
 
             WriteToLog ("--- TURN " + turnCounter + " ---");
 
-            //currently, on a speed tie the turn order is picked at random. I will have to decide on something else later. I don't want it to be RNG.
-
-            if (speedDiff == 0) {
-                speedDiff = 1 * Mathf.Sign (Random.Range (-1, 1));
-            }
-
-            //here we check what are the actions each player performs this turn.
-            //this is YandereDev levels of coding, but I haven't thought of anything better.
-
-            if (player1Action.actionType == ActionType.MOVE && player2Action.actionType == ActionType.MOVE) {
-                //both attack
-                if (speedDiff > 0) {
-                    //player 1 goes first
-                    Debug.Log ("Both attack, speedDiff > 0");
-                    seq.Add (DoMoves (player1Action.move, player1Monster, player2Monster));
-                    seq.Add (DoMoves (player2Action.move, player2Monster, player1Monster));
-
-                } else if (speedDiff < 0) {
-                    //player 2 goes first
-                    Debug.Log ("Both attack, speedDiff < 0");
-                    seq.Add (DoMoves (player2Action.move, player2Monster, player1Monster));
-                    seq.Add (DoMoves (player1Action.move, player1Monster, player2Monster));
-                }
-            } else if (player1Action.actionType == ActionType.SWITCH && player2Action.actionType == ActionType.MOVE) {
-                //player1 switches, player2 attacks
-                Debug.Log ("Player 1 switches, player 2 attacks");
-                seq.Add (SwapMon (player1Monster, player1Action.monster));
-                seq.Add (DoMoves (player2Action.move, player2Monster, player1Action.monster));
-
-            } else if (player1Action.actionType == ActionType.MOVE && player2Action.actionType == ActionType.SWITCH) {
-                //player2 switches, player1 attacks
-                Debug.Log ("Player 2 switches, player 1 attacks");
-                seq.Add (SwapMon (player2Monster, player2Action.monster));
-                seq.Add (DoMoves (player1Action.move, player1Monster, player2Action.monster));
-
-            } else if (player1Action.actionType == ActionType.SWITCH && player2Action.actionType == ActionType.SWITCH) {
-                //both switch. Switching order is based on the speed of the current monster.
-
-                if (speedDiff > 0) {
-                    //player 1 goes first
-                    Debug.Log ("Both switch, speedDiff > 0");
-                    seq.Add (SwapMon (player1Monster, player1Action.monster));
-                    seq.Add (SwapMon (player2Monster, player2Action.monster));
-
-                } else if (speedDiff < 0) {
-                    //player 2 goes first
-                    Debug.Log ("Both switch, speedDiff < 0");
-                    seq.Add (SwapMon (player2Monster, player2Action.monster));
-                    seq.Add (SwapMon (player1Monster, player1Action.monster));
+            
+            foreach (TurnAction act in actionList)
+            {
+                //here we check what actions each player performs this turn.
+                switch(act.actionType) {
+                    case (ActionType.MOVE):
+                        seq.Add (DoMoves (act.move, act.user, act.target));
+                        break;
+                    case (ActionType.SWITCH):
+                        seq.Add (SwapMon (act.user, act.switchMonster));
+                        break;
                 }
             }
 
-            //here we apply the effects of Status conditions, which happens in speed order.
-            if (speedDiff > 0) {
-                seq.Add (PerformStatusEffects (player1Monster));
-                seq.Add (PerformStatusEffects (player2Monster));
-
-            } else {
-                seq.Add(PerformStatusEffects (player2Monster));
-                seq.Add(PerformStatusEffects (player1Monster));
+            foreach (TurnAction act in actionList)
+            {
+                //here we perform status effects.
+                 seq.Add(PerformStatusEffects(act.user));
             }
 
             isTurnInProgress = true;
             foreach (var item in seq) {
                 yield return item;
                 if (player1Monster == null || player2Monster == null) { //checks if the monster that is about to act is dead, and stops that action from happening.
-                    Debug.Log ("Someone died");
                     yield break;
                 }
             }
             isTurnInProgress = false;
             turnCounter++;
             yield break;
-
         }
 
         public IEnumerator PerformStatusEffects (Monster monster) { //executes the effect of a status effect to a given monster
             if (monster.statusEffect != null) { 
-                monster.statusEffect.turnCounter++; //increments turn counter for a status effect
-
-                if (monster.statusEffect.turnCounter > monster.statusEffect.maxTurns) {
+                monster.statusEffect.IncrementStatusCounter(); //decrements turn counter for a status effect
+               
+                switch (monster.statusEffect.statusEffectType) { //checks which status effect is active
+                    case StatusEffectEnum.POISONED:
+                        WriteToLog (monster.name + " is hurt by poison!");
+                        monster.receiveDamage ((int) ((monster.maxHP / 16f) * monster.statusEffect.turnCounter));
+                            if (ReferenceEquals (monster, player1Monster)) {
+                                P1HPText.GetComponent<Text> ().text = player1Monster.currentHP.ToString () + " / " + player1Monster.maxHP.ToString ();
+                                StartCoroutine (HPBarDepleteAnim (P1HPMeter, (float) player1Monster.currentHP / (float) player1Monster.maxHP));
+                                    yield return PlayDebuffAnimP1 ();
+                                StatusEffectTurnCounterP1.GetComponent<Text>().text = (monster.statusEffect.maxTurns - monster.statusEffect.turnCounter).ToString();
+                            } else {
+                                P2HPText.GetComponent<Text> ().text = player2Monster.currentHP.ToString () + " / " + player2Monster.maxHP.ToString ();
+                                StartCoroutine (HPBarDepleteAnim (P2HPMeter, (float) player2Monster.currentHP / (float) player2Monster.maxHP));
+                                    yield return PlayDebuffAnimP2 ();
+                                StatusEffectTurnCounterP2.GetComponent<Text>().text =  (monster.statusEffect.maxTurns - monster.statusEffect.turnCounter).ToString();
+                            }
+                            yield return new WaitForSeconds(1);
+                            break;
+                     case StatusEffectEnum.BURNED:
+                        WriteToLog (monster.name + " is hurt by its burn!");
+                        monster.receiveDamage ((int) (monster.maxHP / 16f));
+                            if (ReferenceEquals (monster, player1Monster)) {
+                                P1HPText.GetComponent<Text> ().text = player1Monster.currentHP.ToString () + " / " + player1Monster.maxHP.ToString ();
+                                StartCoroutine (HPBarDepleteAnim (P1HPMeter, (float) player1Monster.currentHP / (float) player1Monster.maxHP));
+                                    yield return PlayDebuffAnimP1 ();
+                                StatusEffectTurnCounterP1.GetComponent<Text>().text = (monster.statusEffect.maxTurns - monster.statusEffect.turnCounter).ToString();
+                            } else {
+                                P2HPText.GetComponent<Text> ().text = player2Monster.currentHP.ToString () + " / " + player2Monster.maxHP.ToString ();
+                                StartCoroutine (HPBarDepleteAnim (P2HPMeter, (float) player2Monster.currentHP / (float) player2Monster.maxHP));
+                                    yield return PlayDebuffAnimP2 ();
+                                StatusEffectTurnCounterP2.GetComponent<Text>().text =  (monster.statusEffect.maxTurns - monster.statusEffect.turnCounter).ToString();
+                            }
+                            yield return new WaitForSeconds(1);
+                            break;
+                }
+                if (monster.statusEffect.turnCounter == monster.statusEffect.maxTurns) {
                     WriteToLog (monster.name + "'s status effect faded!");
                     monster.statusEffect = null;
-                } else {
-                    switch (monster.statusEffect.statusEffectType) { //checks which status effect is active
-                        case StatusEffectEnum.POISONED:
-                            WriteToLog (monster.name + " is hurt by poison!");
-                            monster.receiveDamage ((int) ((monster.maxHP / 16f) * monster.statusEffect.turnCounter));
-                                if (ReferenceEquals (monster, player1Monster)) {
-                                    StartCoroutine (HPBarDepleteAnim (P1HPMeter, (float) player1Monster.currentHP / (float) player1Monster.maxHP));
-                                        yield return PlayDebuffAnimP1 ();
-                                    P1HPText.GetComponent<Text> ().text = player1Monster.currentHP.ToString () + " / " + player1Monster.maxHP.ToString ();
-                                } else {
-                                    StartCoroutine (HPBarDepleteAnim (P2HPMeter, (float) player2Monster.currentHP / (float) player2Monster.maxHP));
-                                        yield return PlayDebuffAnimP2 ();
-                                    P2HPText.GetComponent<Text> ().text = player2Monster.currentHP.ToString () + " / " + player2Monster.maxHP.ToString ();
-                                }
-                                yield return new WaitForSeconds(1);
-                                break;
-                            }
-                    }
+                    DisableStatusEffectIndicator(monster);
+                } 
             }
             yield return new WaitForSeconds (0);
         }
 
             public IEnumerator SwapMon (Monster current, Monster newMon) { //this is for when you manually switch
-                Debug.Log ("Doing Switching!");
                 reloadUI = true;
                 GameObject camr = P1Cam;
                 SwitchAnim SwitchAnimDel = new SwitchAnim (PlayBuffAnimP1);
-                Debug.Log (current.name);
-                Debug.Log (newMon.name);
                 float animationTime = 1f;
 
 
@@ -357,7 +347,6 @@ public class combatController : MonoBehaviour {
 
             public IEnumerator SummonNewMon (Monster newMon, int player) //handles sending out a new monster after current mon faints
             {
-                Debug.Log ("Doing Summoning!");
                 reloadUI = true;
                 GameObject camr = P1Cam;
                 SwitchAnim SwitchAnimDel = new SwitchAnim (PlayBuffAnimP1);
@@ -405,12 +394,10 @@ public class combatController : MonoBehaviour {
 
             public IEnumerator DoMoves (Move move, Monster attacker, Monster defender) { //execute turn if both monsters are attacking
                 if (attacker != null) {
-                    Debug.Log ("Doing Moves");
                     WriteToLog (attacker.name + " used " + move.name + "!");
 
                     var isSTAB = false;
                     var effectiveness = (TypeUtils.Effectiveness (move.type, defender.type1) * TypeUtils.Effectiveness (move.type, defender.type2));
-                    Debug.Log ("Effectiveness: " + effectiveness);
                     AtkAnim AtkAnimDel1st;
                     FaintAnim FaintAnimDel1st;
                     BuffAnim BuffAnimDel1st;
@@ -439,7 +426,6 @@ public class combatController : MonoBehaviour {
                         }
                     }
 
-                    Debug.Log ("Who's attacking? " + ReferenceEquals (attacker, player1Monster));
                     if (ReferenceEquals (attacker, player1Monster)) {
                         AtkAnimDel1st = new AtkAnim (PlayAtkAnimP1);
                         FaintAnimDel1st = new FaintAnim (PlayFaintAnimP1);
@@ -479,9 +465,7 @@ public class combatController : MonoBehaviour {
 
                         case Category.SPECIAL:
                             var dmg2 = (int) Mathf.Floor ((float) ((move.power) * (isSTAB ? 1.5f : 1f)) * (attacker.spATK.getTrueValue () / defender.spDEF.getTrueValue ()) * damageCalcConstant * (TypeUtils.Effectiveness (move.type, defender.type1) * TypeUtils.Effectiveness (move.type, defender.type2)));
-                            Debug.Log ("First attacks defender: " + dmg2);
                             defender.receiveDamage (dmg2);
-                            //Debug.Log(move.secondaryEffects[0]);
                             yield return AtkAnimDel1st (move, dmg2);
                             break;
 
@@ -516,7 +500,6 @@ public class combatController : MonoBehaviour {
             }
 
             public IEnumerator ApplyEffect (SecondaryEffect effect, Monster monster) { //apply side effects of moves
-                Debug.Log ("Effect: " + effect);
                 switch (effect.type) {
                     case SecondaryEffectType.SELF:
                         switch (effect.effect) {
@@ -533,7 +516,6 @@ public class combatController : MonoBehaviour {
                                 break;
 
                             case SecondaryEffectEffect.BOOST_SPEED_1:
-                                Debug.Log ("SPEED UP!");
                                 WriteToLog (monster.name + "'s SPEED increased!");
                                 if (ReferenceEquals (monster, player1Monster)) {
                                     //playdebuffanimp1
@@ -552,12 +534,9 @@ public class combatController : MonoBehaviour {
                         break;
 
                     case SecondaryEffectType.OTHER:
-                        Debug.Log ("effect.effect: " + effect.effect);
                         switch (effect.effect) {
                             case SecondaryEffectEffect.LOWER_DEF_1:
-                                Debug.Log ("DEFENSE DOWN!");
                                 WriteToLog (monster.name + "'s DEFENSE dropped!");
-                                Debug.Log ("Defense down test: " + ReferenceEquals (monster, player1Monster));
                                 if (ReferenceEquals (monster, player1Monster)) {
                                     //playdebuffanimp1
                                     defDownIndP1.SetActive (true);
@@ -571,30 +550,50 @@ public class combatController : MonoBehaviour {
                                 }
                             break;
                             case SecondaryEffectEffect.POISON_FIVE:
-                                Debug.Log ("trying to Poison enemy for 5 turns!");
-                                Debug.Log(ReferenceEquals (monster, player1Monster));
-                                if (ReferenceEquals (monster, player1Monster)) {
-                                    Debug.Log("Player1Monster.StatusEffect: " + player1Monster.statusEffect);
-                                    if(player1Monster.statusEffect == null){
-                                        WriteToLog(player1Monster.name + " has been poisoned!");
-                                        player1Monster.statusEffect = new StatusEffect(StatusEffectEnum.POISONED, 5);
-                                    }else{
-                                        WriteToLog("But it failed!");
-                                    }
+                                 if(monster.statusEffect == null){
+                                        WriteToLog(monster.name + " has been poisoned!");
+                                        monster.ApplyStatusEffect(StatusEffectEnum.POISONED, 5);
+                                        EnableStatusEffectIndicator(monster);
                                 }else{
-                                    if(player2Monster.statusEffect == null){
-                                        WriteToLog(player2Monster.name + " has been poisoned!");
-                                        player2Monster.statusEffect = new StatusEffect(StatusEffectEnum.POISONED, 5);
-                                    }else{
                                         WriteToLog("But it failed!");
-                                    }
                                 }
                             break;
-
+                            case SecondaryEffectEffect.BURN_FIVE:
+                                 if(monster.statusEffect == null){
+                                        WriteToLog(monster.name + " has been burned!");
+                                        monster.ApplyStatusEffect(StatusEffectEnum.BURNED, 5);
+                                        EnableStatusEffectIndicator(monster);
+                                }else{
+                                        WriteToLog("But it failed!");
+                                }
+                            break;
                         }
                         break;
                 }
                 yield return new WaitForSeconds (0);
+            }
+
+            public void EnableStatusEffectIndicator(Monster monster) {
+                
+            
+
+                if (ReferenceEquals (monster, player1Monster)) {
+                    StatusEffectImageP1.GetComponent<Image>().sprite = StatusUtils.spriteByType(monster.statusEffect.statusEffectType);
+                    StatusEffectImageP1.SetActive(true);
+                    StatusEffectTurnCounterP1.GetComponent<Text>().text = monster.statusEffect.maxTurns.ToString();
+                } else {
+                    StatusEffectImageP2.GetComponent<Image>().sprite = StatusUtils.spriteByType(monster.statusEffect.statusEffectType);
+                    StatusEffectImageP2.SetActive(true);
+                    StatusEffectTurnCounterP2.GetComponent<Text>().text = monster.statusEffect.maxTurns.ToString();
+                }
+            }
+
+            public void DisableStatusEffectIndicator(Monster monster) {
+                 if (ReferenceEquals (monster, player1Monster)) {
+                    StatusEffectImageP1.SetActive(false);
+                 } else {
+                    StatusEffectImageP2.SetActive(false);
+                 }
             }
 
             public IEnumerator ShowNewMonsterSelector () //shows the UI for when the player loses a monster and needs to select a new one
@@ -604,7 +603,6 @@ public class combatController : MonoBehaviour {
                 monsterList.SetActive (true);
 
                 yield return new WaitForSeconds (0);
-
             }
 
             public IEnumerator ChangeNewPlayer2Monster () {
