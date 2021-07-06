@@ -15,88 +15,10 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_Data:
     m_SerializedData: []
-  m_GUID: 993e3ba5db9f5b44ea89abb6d2f7214f
+  m_GUID: 265ad312985a0a0468ae3a0ee2711c73
   m_SerializeEntries:
-  - m_GUID: 128a80094e00bf34fa2555766a7eea0e
-    m_Address: MonsterPrefabs/Fiery
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: 84493eaa65d75074ca2c6e2d8a90ff9a
-    m_Address: MonsterPrefabs/Water
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: a388bda55dc5b6d4d96b88ec4eff8688
-    m_Address: MoveEffect/HEAL_HALF_SELF
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: 3b04304c19b585b4bb679bf6d6192d1e
-    m_Address: MoveEffect/DEF_DOWN_OTHER
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: 2c3be0d563d2f1b4692dae3ecf7ade48
-    m_Address: MoveEffects/SPEED_UP_SELF
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: 9737190055c930642a5ca78867f1cd8b
-    m_Address: MoveEffects/POISON_FIVE_OTHER
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: 221d0a4b183acf548b371ca864ee86aa
-    m_Address: Moves/Fireball
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: 2806e95b67110bf449864aa28c9f173f
-    m_Address: Moves/Droplet
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: 331ad67b86a0c5b4fa2d409716ac6ce4
-    m_Address: Moves/Prod
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: 34f375d49bf927e4f8ccb9e11269e453
-    m_Address: Moves/Rumble
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: fe01bdc40ca68664a88881b77f1c7c8a
-    m_Address: Moves/Shock
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: 97d5348ddc8b9e742aca6c966085fcf5
-    m_Address: Moves/Recover
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: 92695f4403080394ab3158bdf4ee731b
-    m_Address: Moves/Intimidate
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: fc6677a6deff34f44901a9e81c85e63a
-    m_Address: Moves/Sabotage
+  - m_GUID: 7112354124ba4ef498c6c24a493e9847
+    m_Address: Assets/Scriptables/Monsters/Watery.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     m_MainAsset: {fileID: 0}
@@ -107,14 +29,92 @@ MonoBehaviour:
     m_SerializedLabels: []
     m_MainAsset: {fileID: 0}
     m_TargetAsset: {fileID: 0}
-  - m_GUID: 7112354124ba4ef498c6c24a493e9847
-    m_Address: Assets/Scriptables/Monsters/Watery.asset
+  - m_GUID: ad43d92586d9bcc4fa749e9cbc71902c
+    m_Address: Assets/Scriptables/Moves/Move.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 2806e95b67110bf449864aa28c9f173f
+    m_Address: Assets/Scriptables/Moves/MOVE_DROPLET.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: df3b33b45bd601540bf86271bbf88a94
+    m_Address: Assets/Scriptables/Moves/MOVE_ENVENOMATE.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 221d0a4b183acf548b371ca864ee86aa
+    m_Address: Assets/Scriptables/Moves/MOVE_FIREBALL.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 92695f4403080394ab3158bdf4ee731b
+    m_Address: Assets/Scriptables/Moves/MOVE_INTIMIDATE.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 331ad67b86a0c5b4fa2d409716ac6ce4
+    m_Address: Assets/Scriptables/Moves/MOVE_PROD.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 97d5348ddc8b9e742aca6c966085fcf5
+    m_Address: Assets/Scriptables/Moves/MOVE_RECOVER.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 34f375d49bf927e4f8ccb9e11269e453
+    m_Address: Assets/Scriptables/Moves/MOVE_RUMBLE.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: fc6677a6deff34f44901a9e81c85e63a
+    m_Address: Assets/Scriptables/Moves/MOVE_SABOTAGE.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: fe01bdc40ca68664a88881b77f1c7c8a
+    m_Address: Assets/Scriptables/Moves/MOVE_SHOCK.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: a388bda55dc5b6d4d96b88ec4eff8688
+    m_Address: Assets/Scriptables/Moves/Effects/HEAL_HALF_SELF.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 3b04304c19b585b4bb679bf6d6192d1e
+    m_Address: Assets/Scriptables/Moves/Effects/DEF_DOWN_OTHER.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 9737190055c930642a5ca78867f1cd8b
+    m_Address: Assets/Scriptables/Moves/Effects/POISON_FIVE_OTHER.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 2c3be0d563d2f1b4692dae3ecf7ade48
+    m_Address: Assets/Scriptables/Moves/Effects/SPEED_UP_SELF.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     m_MainAsset: {fileID: 0}
     m_TargetAsset: {fileID: 0}
   - m_GUID: 170a91919ce1bd84fbbb84d65256bf0c
-    m_Address: MoveEffect/BURN_FIVE_OTHER
+    m_Address: Assets/Scriptables/Moves/Effects/BURN_FIVE_OTHER.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     m_MainAsset: {fileID: 0}

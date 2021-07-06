@@ -36,9 +36,6 @@ public class StatusUtils
     private static Sprite[] statusinds = Resources.LoadAll<Sprite>("UISprites/statusinds"); 
 
     public static Sprite spriteByType(StatusEffectEnum status){
-        Debug.Log(statusinds.Length);
-        Debug.Log(status);
-        Debug.Log((int) status);
         //returns the different symbol images for every type from the spritesheet. This will eventually be changed when the UI is made prettier
         return statusinds[(int) status]; //can't believe this works
     } 

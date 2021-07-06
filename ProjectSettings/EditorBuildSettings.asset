@@ -5,9 +5,15 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/battleSceneTest.unity
     guid: 0fe2a4761e086d24ababd84f53330d56
+  - enabled: 1
+    path: Assets/Scenes/TitleScreen.unity
+    guid: 19d902c137e854c47827ae6349a37afa
+  - enabled: 1
+    path: Assets/Scenes/battleScene.unity
+    guid: 748ba9b25e80e6146a8e9cd435c81cb7
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: b847db02b48bbbf4c98acac4d0cdf597,
       type: 2}

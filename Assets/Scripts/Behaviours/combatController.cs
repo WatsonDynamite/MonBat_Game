@@ -21,6 +21,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.SceneManagement;
 
 public class combatController : MonoBehaviour {
 
@@ -33,6 +34,8 @@ public class combatController : MonoBehaviour {
         public List<Monster> player1Party; //list of Player 1's available monsters
         public List<Monster> player2Party; //same but for player 2
 
+        [SerializeField]
+        [Header ("Player 1 Monster")]
         public Monster player1Monster; //player 1's current active monster
         public Monster player2Monster; //you know the drill
 
@@ -82,6 +85,8 @@ public class combatController : MonoBehaviour {
         public GameObject monsterList;
 
         public bool isTurnInProgress;  //controls whether the animations for a turn are playing.
+
+        public bool hasTurnBeenBroken; //keeps track of whether the normal flow of the current turn has been interrupted (such as when a monster dies and can't execute their move)
         public bool reloadUI = false;  //reloads the UI when set to true
 
         private List<IEnumerator> seq; //this is the sequence of animations and actions for a given turn. This needs to be constructed and then executed
@@ -187,6 +192,8 @@ public class combatController : MonoBehaviour {
         //MAIN COMBAT FUNCTIONS
 
         public IEnumerator ExecuteTurn (TurnAction player1Action, TurnAction player2Action) {
+            hasTurnBeenBroken = false;
+
             if (isTurnInProgress) {
                 yield break; //stops any attempts to execute this function when a turn is already in progress
             }
@@ -204,9 +211,8 @@ public class combatController : MonoBehaviour {
                 }
                 //if priorities are equal, use speed
                 else {
-                    //if positive, player 1 is attacker. If negative, player 2 is attacker. If 0, speed tie.
-                    var speedDiff = action1.user.SPEED.getTrueValue() - action2.user.SPEED.getTrueValue();
-
+                    //if positive, player 1 is attacker. If negative, player 2 is attacker. If 0, speed tie. (array sorting works "backwards")
+                    var speedDiff = action2.user.SPEED.getTrueValue() - action1.user.SPEED.getTrueValue();
                     //currently, on a speed tie the turn order is picked at random. I will have to decide on something else later. I don't want it to be RNG.
                     if (speedDiff == 0) {
                         speedDiff = 1 * Mathf.Sign (UnityEngine.Random.Range (-1, 1));
@@ -220,37 +226,72 @@ public class combatController : MonoBehaviour {
             
             foreach (TurnAction act in actionList)
             {
-                //here we check what actions each player performs this turn.
                 switch(act.actionType) {
                     case (ActionType.MOVE):
                         seq.Add (DoMoves (act.move, act.user, act.target));
                         break;
                     case (ActionType.SWITCH):
+                        Debug.Log(act.user.name);
+                        Debug.Log(act.switchMonster == null);
                         seq.Add (SwapMon (act.user, act.switchMonster));
                         break;
                 }
             }
 
-            foreach (TurnAction act in actionList)
-            {
-                //here we perform status effects.
-                 seq.Add(PerformStatusEffects(act.user));
-            }
+            
 
             isTurnInProgress = true;
             foreach (var item in seq) {
-                yield return item;
-                if (player1Monster == null || player2Monster == null) { //checks if the monster that is about to act is dead, and stops that action from happening.
-                    yield break;
+                if (player1Monster == null || player2Monster == null) {
+                    Debug.Log("Broke off Turn");
+                    hasTurnBeenBroken = true;
+                }
+                if(!hasTurnBeenBroken) {
+                     yield return item;
+                     //checks if the monster that is about to act is dead, and stops that action from happening
+                    Debug.Log("Executed Turn" + turnCounter);
+                }                
+            }
+            yield return SequenceStatusEffects();
+            if(hasTurnBeenBroken) {
+                List<Monster> auxList = new List<Monster> ();
+                //obtain every non-dead monster from the party
+                foreach (Monster mon in player1Party) {
+                    if (!(mon.Compare (MonsterList.monsterNone)) && mon.currentHP != 0) {
+                        auxList.Add (mon);
+                    }
+                }
+                if(auxList.Count > 0) {
+                    yield return ShowNewMonsterSelector();
+                } else {
+                    SceneManager.LoadScene("TitleScreen");
                 }
             }
             isTurnInProgress = false;
             turnCounter++;
+            Debug.Log(player2Monster.currentHP);
             yield break;
         }
 
+        private IEnumerator SequenceStatusEffects()  {
+            List<Monster> monsterList = new List<Monster>();
+            if(player1Monster != null) monsterList.Add(player1Monster);
+            if(player2Monster != null) monsterList.Add(player2Monster);
+            monsterList.Sort(delegate(Monster monster1, Monster monster2) {
+                    var speedDiff =  monster1.SPEED.getTrueValue() - monster2.SPEED.getTrueValue();
+                    if (speedDiff == 0) {
+                        speedDiff = 1 * Mathf.Sign (UnityEngine.Random.Range (-1, 1));
+                    }
+                    return (int) speedDiff;
+            });
+
+            foreach (Monster monster in monsterList) {
+                 yield return PerformStatusEffects(monster);
+            }
+        }
+
         public IEnumerator PerformStatusEffects (Monster monster) { //executes the effect of a status effect to a given monster
-            if (monster.statusEffect != null) { 
+            if (monster != null && monster.statusEffect != null) {
                 monster.statusEffect.IncrementStatusCounter(); //decrements turn counter for a status effect
                
                 switch (monster.statusEffect.statusEffectType) { //checks which status effect is active
@@ -302,7 +343,6 @@ public class combatController : MonoBehaviour {
                 SwitchAnim SwitchAnimDel = new SwitchAnim (PlayBuffAnimP1);
                 float animationTime = 1f;
 
-
                 //set up which monster we're switching
                 if (ReferenceEquals (current, player1Monster)) {
                     //we're doing player 1
@@ -328,6 +368,7 @@ public class combatController : MonoBehaviour {
                     player1Monster = null;
                     Destroy (player1MonsterInstance);
                     player1Monster = newMon;
+                    Debug.Log(player1Monster.name);
                     player1MonsterInstance = Instantiate (player1Monster.model as GameObject, player1Spawn.transform.position, player1Spawn.transform.rotation);
                 } else {
                     player2Monster = null;
@@ -347,6 +388,7 @@ public class combatController : MonoBehaviour {
 
             public IEnumerator SummonNewMon (Monster newMon, int player) //handles sending out a new monster after current mon faints
             {
+
                 reloadUI = true;
                 GameObject camr = P1Cam;
                 SwitchAnim SwitchAnimDel = new SwitchAnim (PlayBuffAnimP1);
@@ -574,9 +616,6 @@ public class combatController : MonoBehaviour {
             }
 
             public void EnableStatusEffectIndicator(Monster monster) {
-                
-            
-
                 if (ReferenceEquals (monster, player1Monster)) {
                     StatusEffectImageP1.GetComponent<Image>().sprite = StatusUtils.spriteByType(monster.statusEffect.statusEffectType);
                     StatusEffectImageP1.SetActive(true);
@@ -606,15 +645,22 @@ public class combatController : MonoBehaviour {
             }
 
             public IEnumerator ChangeNewPlayer2Monster () {
-                List<Monster> auxList = new List<Monster> ();
-                //obtain every non-dead monster from the party
-                foreach (Monster mon in player2Party) {
-                    if (!(mon.Compare (MonsterList.monsterNone)) && mon.currentHP != 0) {
-                        auxList.Add (mon);
+                Monster monAux = null;
+                try {
+                    List<Monster> auxList = new List<Monster> ();
+                    //obtain every non-dead monster from the party
+                    foreach (Monster mon in player2Party) {
+                        if (!(mon.Compare (MonsterList.monsterNone)) && mon.currentHP != 0) {
+                            auxList.Add (mon);
+                        }
                     }
+                    System.Random ran = new System.Random ();
+            
+                    monAux = auxList[ran.Next (auxList.Count)];
+                } catch (ArgumentOutOfRangeException) {
+                    //player 1 wins!
+                    SceneManager.LoadScene("TitleScreen");
                 }
-                System.Random ran = new System.Random ();
-                Monster monAux = auxList[ran.Next (auxList.Count)];
 
                 yield return SummonNewMon (monAux, 2);
 
@@ -734,11 +780,10 @@ public class combatController : MonoBehaviour {
                 }
                 yield return new WaitForSeconds (1);
                 Destroy (player1MonsterInstance);
+                DisableStatusEffectIndicator(player1Monster);
                 player1Monster = null;
                 //present monster GUI
                 LoadMonsterScoreBoards ();
-                yield return ShowNewMonsterSelector ();
-
             }
 
             public IEnumerator PlayFaintAnimP2 () {
@@ -749,6 +794,7 @@ public class combatController : MonoBehaviour {
                 }
                 yield return new WaitForSeconds (1);
                 Destroy (player2MonsterInstance);
+                DisableStatusEffectIndicator(player2Monster);
                 player2Monster = null;
                 LoadMonsterScoreBoards ();
                 yield return ChangeNewPlayer2Monster ();

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: interface
+  m_EditorClassIdentifier: 
+  m_GroupName: interface
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 270942e46ea16ea44883db5985635aaf
+  m_SerializeEntries:
+  - m_GUID: 582cff7ab28e253498c7710e45c90df1
+    m_Address: Assets/Resources/UISprites/statusinds.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 2800000, guid: 582cff7ab28e253498c7710e45c90df1, type: 3}
+    m_TargetAsset: {fileID: 2800000, guid: 582cff7ab28e253498c7710e45c90df1, type: 3}
+  - m_GUID: 519cf48edda8d03439fe23c525da1e0c
+    m_Address: Assets/Resources/UISprites/typesymbs.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 2800000, guid: 519cf48edda8d03439fe23c525da1e0c, type: 3}
+    m_TargetAsset: {fileID: 2800000, guid: 519cf48edda8d03439fe23c525da1e0c, type: 3}
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: b8566679ae484e74ebf4a11db92a76f2, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 3ae38dda7a734a946bb1018687f816f0, type: 2}
+    - {fileID: 11400000, guid: c0541a396b56c4d43a01811f4ec0298e, type: 2}

@@ -51,6 +51,7 @@ public class LoadP1MovesDynamic : MonoBehaviour
         int i = 0;
         foreach (GameObject button in buttons)
         {
+            button.GetComponent<Button>().onClick.RemoveAllListeners();
             Move mv = moveList[i];
             TurnAction playerAction = new TurnAction(mv, combatController.player1Monster, combatController.player2Monster);
 
@@ -67,10 +68,8 @@ public class LoadP1MovesDynamic : MonoBehaviour
         //the following 3 lines are to be replaced whenever we get any netcode
         List<Move> enemyMoveList = combatController.getP2Moves();
         Move enemyMove = enemyMoveList[Random.Range(0, enemyMoveList.Count - 1)];
-
         StartCoroutine(combatController.ExecuteTurn(playerAction, new TurnAction(enemyMove, combatController.player2Monster, combatController.player1Monster)));
         ToggleMoveList();
-        
     }
 
     // Update is called once per frame

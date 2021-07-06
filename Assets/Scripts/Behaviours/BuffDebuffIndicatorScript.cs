@@ -20,9 +20,7 @@ public class BuffDebuffIndicatorScript : MonoBehaviour
     
     void OnEnable()
     {
-        Debug.Log("Enabling Indicator");
         OGPosition = transform.position;
-        Debug.Log("OGPosition: " + OGPosition);
         switch(behaviorType){
             case 0: StartCoroutine(FloatDown());
                 break;
@@ -34,7 +32,6 @@ public class BuffDebuffIndicatorScript : MonoBehaviour
 
     void Update(){
         /*
-        Debug.Log("Current Position: " + transform.position.y);
         if(transform.position.y >= OGPosition.y - travel_dist){
             
            
@@ -53,25 +50,20 @@ public class BuffDebuffIndicatorScript : MonoBehaviour
 
     IEnumerator FloatDown(){
         yield return new WaitForSeconds(0.4f);
-        Debug.Log("Moving indicator");
         while(transform.position.y > OGPosition.y - travel_dist){
          transform.position = Vector3.MoveTowards(transform.position, new Vector3(OGPosition.x , OGPosition.y - travel_dist, OGPosition.z),  speed * Time.deltaTime);
-         Debug.Log("Transform.position: " + transform.position);
          yield return new WaitForSeconds(0.01f);
         }
-        Debug.Log("Removing Indicator");
         gameObject.SetActive(false);
     }
 
     IEnumerator FloatUp(){
         yield return new WaitForSeconds(0.4f);
-        Debug.Log("Moving indicator");
         while(transform.position.y < OGPosition.y + travel_dist){
          transform.position = Vector3.MoveTowards(transform.position, new Vector3(OGPosition.x , OGPosition.y + travel_dist, OGPosition.z),  speed * Time.deltaTime);
          yield return new WaitForSeconds(0.01f);
         }
         yield return new WaitForSeconds(0.4f);
-         Debug.Log("Removing Indicator");
         gameObject.SetActive(false);
     }
 

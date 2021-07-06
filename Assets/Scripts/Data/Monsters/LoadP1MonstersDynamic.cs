@@ -45,7 +45,8 @@ public class LoadP1MonstersDynamic : MonoBehaviour
        
         int ind = 0;
         foreach (GameObject button in btnListAux)
-        {
+        {  
+            Monster p1Mon = combatController.player1Monster;
             Monster current = party[ind];
             if (current != null)
             {
@@ -87,19 +88,14 @@ public class LoadP1MonstersDynamic : MonoBehaviour
         if(combatController.player1Monster == null)
         {
             LoadMonstersIntoUI();
-            Debug.Log("Swapping after a faint");
             StartCoroutine(combatController.SummonNewMon(playerAction.switchMonster, 1));
         }
         else
         {
             //this gets both moves from each monster and begins the turn
-            Debug.Log("Action selected: Switch");
-            Debug.Log("Monster selected: " + playerAction.switchMonster.name);
-            
             //the next 3 lines of code are to be replaced whenever netcode is implemented.
             List<Move> enemyMoveList = combatController.getP2Moves();
             Move enemyMove = enemyMoveList[Random.Range(0, enemyMoveList.Count - 1)];
-            Debug.Log("Enemy move: " + enemyMove.name);
 
 
             StartCoroutine(combatController.ExecuteTurn(playerAction, new TurnAction(enemyMove, combatController.player2Monster, combatController.player1Monster)));

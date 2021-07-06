@@ -37,8 +37,9 @@ public class TurnAction
     }
 
         //Turn action for switching. mn is the monster to switch to. user is the monster that's being switched out.
-    public TurnAction(Monster mn,  Monster user){
+    public TurnAction(Monster mn,  Monster usr){
             actionType = ActionType.SWITCH;
+            user = usr;
             move = MoveList.moveNone;
             switchMonster = mn;
             priority = int.MaxValue;
