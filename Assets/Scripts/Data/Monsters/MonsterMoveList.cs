@@ -26,7 +26,7 @@ public static class MoveList
         //please make sure to never leave power at 0 for damaging moves.
         //it's ok if you mess up and assign a number to a status move's power, as it's never used.
 
-        moveNone = new Move("----", "test move used for error handling", 0, 0, 0, Type.NONE, Category.STATUS, null); //avoid using this, as a rule of thumb monsters should always have 4 moves
-        delete = new Move("Delete", "Just straight up destroys the enemy fam", 4000, 0, 1, Type.SHADOW, Category.SPECIAL, null); //this move is just a meme for testing, don't use
+        //moveNone = new Move("----", "test move used for error handling", 0, 0, Type.NONE, Category.STATUS, 0, null); //avoid using this, as a rule of thumb monsters should always have 4 moves
+        //delete = new Move("Delete", "Just straight up destroys the enemy fam", 4000, 0, Type.SHADOW, Category.SPECIAL, 1, null); //this move is just a meme for testing, don't use
     }    
 }

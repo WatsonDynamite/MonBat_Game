@@ -54,7 +54,6 @@ public class LoadP1MovesDynamic : MonoBehaviour
             button.GetComponent<Button>().onClick.RemoveAllListeners();
             Move mv = moveList[i];
             TurnAction playerAction = new TurnAction(mv, combatController.player1Monster, combatController.player2Monster);
-
             button.GetComponentInChildren<Text>().text = mv.name;
             button.GetComponentsInChildren<Image>()[1].sprite = TypeUtils.spriteByType(mv.type);
             button.GetComponent<Button>().onClick.AddListener(delegate { turnQueuer(playerAction); });

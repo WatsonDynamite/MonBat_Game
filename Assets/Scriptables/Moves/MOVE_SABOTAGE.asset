@@ -16,8 +16,10 @@ MonoBehaviour:
   desc: The user strikes the opponent, raising their own speed and lowering the enemy's
     defense.
   cost: 4
-  power: 10
+  power: 15
   type: 10
   cat: 0
+  priority: 0
   secondaryEffects:
   - {fileID: 11400000, guid: 3b04304c19b585b4bb679bf6d6192d1e, type: 2}
+  - {fileID: 11400000, guid: 2c3be0d563d2f1b4692dae3ecf7ade48, type: 2}

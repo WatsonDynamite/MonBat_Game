@@ -203,11 +203,14 @@ public class combatController : MonoBehaviour {
             TurnAction[] actionList = {player1Action, player2Action};
             Array.Sort(actionList, delegate(TurnAction action1, TurnAction action2) {
                 //check priorities
-                if(action1.priority > action2.priority){
-                    return 1;
-                }
-                if(action1.priority < action2.priority){
-                    return -1;
+                if(action1.priority != action2.priority) {
+                    if(action1.priority > action2.priority){
+                        return -1;
+                    }
+                    if(action1.priority < action2.priority){
+                        return 1;
+                    }
+                    return 0;
                 }
                 //if priorities are equal, use speed
                 else {
@@ -232,13 +235,10 @@ public class combatController : MonoBehaviour {
                         break;
                     case (ActionType.SWITCH):
                         Debug.Log(act.user.name);
-                        Debug.Log(act.switchMonster == null);
                         seq.Add (SwapMon (act.user, act.switchMonster));
                         break;
                 }
             }
-
-            
 
             isTurnInProgress = true;
             foreach (var item in seq) {
@@ -261,7 +261,9 @@ public class combatController : MonoBehaviour {
                         auxList.Add (mon);
                     }
                 }
-                if(auxList.Count > 0) {
+                if (auxList.Count == 1){ 
+                    yield return SummonNewMon(auxList[0], 1);
+                } else if(auxList.Count > 0) {
                     yield return ShowNewMonsterSelector();
                 } else {
                     SceneManager.LoadScene("TitleScreen");
@@ -269,7 +271,6 @@ public class combatController : MonoBehaviour {
             }
             isTurnInProgress = false;
             turnCounter++;
-            Debug.Log(player2Monster.currentHP);
             yield break;
         }
 
@@ -334,7 +335,21 @@ public class combatController : MonoBehaviour {
                     DisableStatusEffectIndicator(monster);
                 } 
             }
-            yield return new WaitForSeconds (0);
+
+            //check for dead monsters after status effects
+                if (monster.currentHP <= 0) {
+                        if (ReferenceEquals (monster, player1Monster)) {
+                            yield return PlayFaintAnimP1 ();
+                        }
+                        if (ReferenceEquals (monster, player2Monster)) {
+                            yield return PlayFaintAnimP2 ();
+                        }
+                        //turn is over
+                        isTurnInProgress = false;
+                        yield break;
+                }
+
+            yield return null;
         }
 
             public IEnumerator SwapMon (Monster current, Monster newMon) { //this is for when you manually switch
@@ -368,7 +383,6 @@ public class combatController : MonoBehaviour {
                     player1Monster = null;
                     Destroy (player1MonsterInstance);
                     player1Monster = newMon;
-                    Debug.Log(player1Monster.name);
                     player1MonsterInstance = Instantiate (player1Monster.model as GameObject, player1Spawn.transform.position, player1Spawn.transform.rotation);
                 } else {
                     player2Monster = null;
@@ -522,6 +536,7 @@ public class combatController : MonoBehaviour {
                     if (defender.currentHP <= 0) {
                         yield return FaintAnimDel2nd ();
                         //turn is over
+                        isTurnInProgress = false;
                         yield break;
                     }
 
@@ -533,7 +548,6 @@ public class combatController : MonoBehaviour {
                                 }else {
                                     yield return ApplyEffect (se, attacker);
                                 }
-
                             }
                         }
                     }
@@ -637,14 +651,15 @@ public class combatController : MonoBehaviour {
 
             public IEnumerator ShowNewMonsterSelector () //shows the UI for when the player loses a monster and needs to select a new one
             {
-                isTurnInProgress = true;
+                isTurnInProgress = false;
 
                 monsterList.SetActive (true);
 
-                yield return new WaitForSeconds (0);
+                yield return null;
             }
 
             public IEnumerator ChangeNewPlayer2Monster () {
+                isTurnInProgress = true;
                 Monster monAux = null;
                 try {
                     List<Monster> auxList = new List<Monster> ();
@@ -750,6 +765,7 @@ public class combatController : MonoBehaviour {
                 P2Cam.SetActive (true);
                 moveNamePlate.GetComponentInChildren<Text> ().text = move.name;
                 moveNamePlate.SetActive (true);
+                
                 if ((player2MonsterInstance).GetComponent<Animator> () != null) {
                     (player2MonsterInstance).GetComponent<Animator> ().SetBool ("Attack 01", true);
                     StartCoroutine (AnimationStateRestore (player2MonsterInstance));
@@ -798,7 +814,6 @@ public class combatController : MonoBehaviour {
                 player2Monster = null;
                 LoadMonsterScoreBoards ();
                 yield return ChangeNewPlayer2Monster ();
-
             }
 
             //ANIMS FOR CASTING STATUS MOVES

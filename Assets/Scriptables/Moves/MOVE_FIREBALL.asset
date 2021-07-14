@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: MOVE_FIREBALL
   m_EditorClassIdentifier: 
   name: Fireball
-  desc: The enemy is singed with a small fireball.
+  desc: Singes the enemty with a small fireball.
   cost: 2
   power: 50
   type: 2
   cat: 0
+  priority: 1
   secondaryEffects: []

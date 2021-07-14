@@ -42,6 +42,6 @@ public class TurnAction
             user = usr;
             move = MoveList.moveNone;
             switchMonster = mn;
-            priority = int.MaxValue;
+            priority = 999;
     }
 }

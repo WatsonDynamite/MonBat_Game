@@ -25,7 +25,8 @@ public class Move : ScriptableObject
     //array of special secondary effects triggered by the move
     public SecondaryEffect[] secondaryEffects;
 
-    public Move(string nm, string dsc, int pow, int c, int pri, Type t, Category ct, SecondaryEffect[] scFX){
+/*
+    public Move(string nm, string dsc, int pow, int c, Type t, Category ct, int pri, SecondaryEffect[] scFX){
             name = nm;
             desc = dsc;
             cost = c;
@@ -35,5 +36,6 @@ public class Move : ScriptableObject
             priority = pri;
             secondaryEffects = scFX;
     }
+    */
 }
 
